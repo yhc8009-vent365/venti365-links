@@ -6,6 +6,7 @@
 출력: data/venti365.json  (linkhub.py 가 읽어 HTML 로 렌더)
 """
 import html
+import hashlib
 import json
 import os
 import re
@@ -15,6 +16,7 @@ BLOG_ID = "venti365"
 RSS = f"https://rss.blog.naver.com/{BLOG_ID}"
 UA = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/120 Safari/537.36"}
 ROOT = os.path.dirname(os.path.abspath(__file__))
+IMG_DIR = os.path.join(ROOT, "images")
 MAX_ITEMS = 30
 
 # 고정 상단 링크 (실제 확인된 주소만)
@@ -23,6 +25,48 @@ KAKAO = "https://pf.kakao.com/_xgMuaX/chat"
 BLOG = f"https://blog.naver.com/{BLOG_ID}"
 
 CAT_ORDER = ["공지·예약", "공항", "골프", "출장", "기차·KTX", "여행정보"]
+
+# 썸네일은 반드시 자체 보관한다.
+# 🚨 네이버 CDN(blogthumb.pstatic.net)은 외부 도메인에서의 핫링크를 차단한다 — github.io 에서
+#    참조하면 이미지가 전부 깨진다(2026-09-20 실측: 로컬 file:// 에서는 Referer 가 없어 정상,
+#    배포 후에는 전부 broken). 그래서 내려받아 저장소에 함께 올리고 상대경로로 참조한다.
+_USED_IMAGES = set()
+
+
+def local_image(url, prefix=""):
+    """원격 이미지를 images/ 로 내려받고 상대경로를 돌려준다. 실패하면 원래 URL 유지."""
+    if not url:
+        return ""
+    os.makedirs(IMG_DIR, exist_ok=True)
+    fn = f"{prefix}{hashlib.sha1(url.encode()).hexdigest()[:16]}.jpg"
+    path = os.path.join(IMG_DIR, fn)
+    if not os.path.exists(path) or os.path.getsize(path) == 0:
+        try:
+            req = urllib.request.Request(url, headers=UA)
+            with urllib.request.urlopen(req, timeout=30) as r:
+                data = r.read()
+            with open(path, "wb") as f:
+                f.write(data)
+        except Exception as e:
+            print(f"  ! 이미지 내려받기 실패: {str(e)[:60]} — 원격 URL 유지")
+            return url
+    _USED_IMAGES.add(fn)
+    return f"images/{fn}"
+
+
+def prune_images():
+    """이번 실행에서 쓰이지 않은 내려받은 썸네일을 정리한다(저장소 비대화 방지)."""
+    if not os.path.isdir(IMG_DIR):
+        return 0
+    n = 0
+    for f in os.listdir(IMG_DIR):
+        if f.endswith(".jpg") and f not in _USED_IMAGES:
+            try:
+                os.remove(os.path.join(IMG_DIR, f))
+                n += 1
+            except Exception:
+                pass
+    return n
 
 
 def fetch(url):
@@ -62,7 +106,7 @@ def main():
     ch_title = clean(re.search(r"<title>(.*?)</title>", ch, re.S).group(1))
     ch_desc = clean(re.search(r"<description>(.*?)</description>", ch, re.S).group(1))
     ch_img = re.search(r"<image>\s*<url>(.*?)</url>", ch, re.S)
-    avatar = clean(ch_img.group(1)) if ch_img else ""
+    avatar = local_image(clean(ch_img.group(1)), "avatar_") if ch_img else ""
 
     blocks = []
     for it in items[:MAX_ITEMS]:
@@ -84,7 +128,7 @@ def main():
                    "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12}[m.group(2)]
             date = f"{m.group(3)}-{mon:02d}-{int(m.group(1)):02d}"
         blocks.append({"cat": cat_of(title, raw_cat), "title": title,
-                       "url": link, "image": img, "desc": desc[:95], "date": date})
+                       "url": link, "image": local_image(img), "desc": desc[:95], "date": date})
 
     # 최신 글이 가장 큰 번호를 갖도록 부여 (인포크링크 운영 방식과 동일)
     for i, b in enumerate(reversed(blocks), 1):
@@ -98,6 +142,7 @@ def main():
             break
 
     cats = [c for c in CAT_ORDER if any(b["cat"] == c for b in blocks)]
+    pruned = prune_images()
 
     cfg = {
         "title": "벤티365",
@@ -122,6 +167,7 @@ def main():
     os.makedirs(os.path.dirname(out), exist_ok=True)
     json.dump(cfg, open(out, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     print(f"수집 완료: 글 {len(blocks)}건 → {out}")
+    print(f"썸네일 자체 보관: images/ {len(_USED_IMAGES)}장 (정리 {pruned}장)")
     from collections import Counter
     print("카테고리 분포:", dict(Counter(b["cat"] for b in blocks)))
     print("상단 3건:")
