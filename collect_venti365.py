@@ -128,7 +128,8 @@ def main():
                    "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12}[m.group(2)]
             date = f"{m.group(3)}-{mon:02d}-{int(m.group(1)):02d}"
         blocks.append({"cat": cat_of(title, raw_cat), "title": title,
-                       "url": link, "image": local_image(img), "desc": desc[:95], "date": date})
+                       "url": link, "image": local_image(img),
+                       "desc": re.sub(r'^["\'\s]+|["\'\s]+$', "", desc)[:95], "date": date})
 
     # 최신 글이 가장 큰 번호를 갖도록 부여 (인포크링크 운영 방식과 동일)
     for i, b in enumerate(reversed(blocks), 1):
