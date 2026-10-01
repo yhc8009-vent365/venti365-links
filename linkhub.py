@@ -129,6 +129,32 @@ def img_src(ref, embed, base_dir):
         return f"data:{mime};base64,{base64.b64encode(f.read()).decode()}"
 
 
+def _head_assets(cfg, e, th):
+    """파비콘·앱 아이콘·공유(OG) 카드 메타 — 값이 없으면 해당 줄만 생략한다."""
+    out = []
+    fav = cfg.get("favicon", "favicon-32.png")
+    if fav:
+        out.append(f'<link rel="icon" href="{e(fav)}" sizes="32x32">')
+    ati = cfg.get("apple_touch_icon", "apple-touch-icon.png")
+    if ati:
+        out.append(f'<link rel="apple-touch-icon" href="{e(ati)}">')
+    if th.get("accent"):
+        out.append(f'<meta name="theme-color" content="{e(th["accent"])}">')
+    title = e(cfg.get("title", "") or "")
+    desc = e(cfg.get("bio", "") or "")
+    if title:
+        out.append(f'<meta property="og:title" content="{title}">')
+    if desc:
+        out.append(f'<meta property="og:description" content="{desc}">')
+    ogi = cfg.get("og_image", "")
+    if ogi:
+        out.append(f'<meta property="og:image" content="{e(ogi)}">')
+        out.append('<meta property="og:image:width" content="1200">')
+        out.append('<meta property="og:image:height" content="630">')
+        out.append('<meta name="twitter:card" content="summary_large_image">')
+    return "\n".join(out)
+
+
 def render(cfg, base_dir="."):
     th = {"bg": "#eef4f2", "card": "#ffffff", "accent": "#0f7b6c",
           "text": "#16211f", "muted": "#5d6b68", "radius": 18}
@@ -148,6 +174,7 @@ def render(cfg, base_dir="."):
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>{e(cfg.get('title','링크허브'))}</title>
 <meta name="description" content="{e(cfg.get('bio','') or '')}">
+{_head_assets(cfg, e, th)}
 <style>{CSS % th}</style></head>
 <body><div class="wrap">
 <div class="profile">"""]
