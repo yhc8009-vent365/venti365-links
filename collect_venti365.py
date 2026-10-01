@@ -28,6 +28,12 @@ BLOG = f"https://blog.naver.com/{BLOG_ID}"
 APP_URL = "app/"
 APP_IMG = "app_card.jpg"
 
+# 로고 자산 — 링크허브 저장소 루트에 함께 배포된다(linkhub_refresh.sh 가 pack_4안 에서 복사).
+# og:image 는 절대 URL 이어야 카카오톡·SNS 미리보기가 뜬다.
+FAVICON = "favicon-32.png"
+APPLE_TOUCH = "apple-touch-icon.png"
+OG_IMAGE = "https://yhc8009-vent365.github.io/venti365-links/og-image.png"
+
 CAT_ORDER = ["공지·예약", "공항", "골프", "출장", "기차·KTX", "여행정보"]
 
 # 썸네일은 반드시 자체 보관한다.
@@ -168,6 +174,9 @@ def main():
         "handle": f"@{BLOG_ID} · 여행.공항·골프·출장",
         "bio": ch_desc or "공항·골프·출장 이동 정보와 예약 안내",
         "avatar": avatar,
+        "favicon": FAVICON,
+        "apple_touch_icon": APPLE_TOUCH,
+        "og_image": OG_IMAGE,
         "theme": {"bg": "#eef4f2", "card": "#ffffff", "accent": "#0f7b6c",
                   "text": "#16211f", "muted": "#5d6b68", "radius": 18},
         "notice": {"text": "예약 문의 " + PHONE + " · 카카오톡 채널 '벤티365' · "
