@@ -67,6 +67,12 @@ button{cursor:pointer;border:0;background:none}
 .hero h1{font-size:22px;font-weight:800;letter-spacing:-.04em;line-height:1.35}
 .hero h1 em{font-style:normal;background:linear-gradient(transparent 58%,#FFE95C 58%)}
 .hero p{color:var(--sub);font-size:14.5px;margin-top:8px}
+.hours{
+  display:inline-flex;align-items:center;gap:7px;margin-top:12px;
+  background:#fff;border:1px solid var(--line);border-radius:999px;
+  padding:8px 14px;font-size:13.5px;color:var(--sub);font-weight:600
+}
+.hours b{color:var(--ink)}
 
 /* ── 카드 ── */
 .card{background:var(--card);border-radius:var(--r);padding:18px;margin-top:14px}
@@ -105,6 +111,8 @@ button{cursor:pointer;border:0;background:none}
 .fld.bad input,.fld.bad textarea{border-color:var(--red);background:#FFF5F6}
 .err{display:none;color:var(--red);font-size:12.5px;margin-top:6px;font-weight:600}
 .fld.bad .err{display:block}
+.soon{display:none;color:#8A6D00;background:#FFF8DC;border-radius:9px;padding:9px 11px;font-size:12.5px;margin-top:8px;line-height:1.5}
+.soon.on{display:block}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
 /* ── 동의 ── */
@@ -138,6 +146,8 @@ button{cursor:pointer;border:0;background:none}
 .btn-sms{background:var(--ink);color:#fff}
 .btn-ghost{background:#fff;border:1.5px solid var(--line);color:var(--sub);font-weight:700;font-size:15px}
 .btn[disabled]{opacity:.45}
+a.btn{text-decoration:none}
+.ch-link{margin-top:14px}
 
 /* ── 안내 ── */
 .note{
@@ -145,6 +155,11 @@ button{cursor:pointer;border:0;background:none}
   border-radius:10px;padding:13px 14px;font-size:13.5px;color:#1B4B8F;line-height:1.6
 }
 .note b{color:#123A70}
+.guide{display:grid;gap:12px}
+.gi{display:grid;grid-template-columns:86px 1fr;gap:10px;font-size:13.5px;align-items:start}
+.gk{color:var(--muted);font-weight:700}
+.gv{color:var(--sub);line-height:1.55}
+.gv b{color:var(--ink)}
 .warnline{font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.55}
 
 /* ── 하단 고정바 ── */
@@ -204,6 +219,7 @@ footer .biz{margin-top:6px;font-size:12px;color:#9AA3AD}
   <section class="hero">
     <h1>공항 픽업·골프·지방출장<br><em>1분 예약 접수</em></h1>
     <p>아래 정보만 입력하시면 <b>문자</b> 또는 <b>카카오톡</b>으로 바로 접수됩니다. 접수 후 예상 요금과 예약금을 안내해 드립니다.</p>
+    <div class="hours">🕐 상담·접수 <b id="hoursText">평일 13:00 ~ 익일 새벽 02:00</b></div>
   </section>
 
   <!-- ① 서비스 선택 -->
@@ -236,9 +252,10 @@ footer .biz{margin-top:6px;font-size:12px;color:#9AA3AD}
     </div>
 
     <div class="fld" id="f-when">
-      <label for="when">예약 일시<span class="req">*</span></label>
+      <label for="when">탑승 날짜 및 시간<span class="req">*</span></label>
       <input type="datetime-local" id="when">
       <div class="err">오늘 이후 시각을 선택해 주세요.</div>
+      <div class="soon" id="soon">⏳ 24시간 이내 탑승입니다. 스케줄 조율상 접수가 어려울 수 있으니 문자로 먼저 확인해 주세요.</div>
     </div>
 
     <div class="fld" id="f-from">
@@ -259,7 +276,7 @@ footer .biz{margin-top:6px;font-size:12px;color:#9AA3AD}
         <input type="text" id="pax" inputmode="numeric" placeholder="예: 4명" maxlength="10">
       </div>
       <div class="fld">
-        <label for="bag">수하물 / 골프채</label>
+        <label for="bag">수하물 수량(캐리어·골프백)</label>
         <input type="text" id="bag" placeholder="예: 캐리어 2, 골프백 2" maxlength="30">
       </div>
     </div>
@@ -307,7 +324,22 @@ footer .biz{margin-top:6px;font-size:12px;color:#9AA3AD}
       <b>2.</b> 예약 확정을 위해 <b>선불 예약금 10,000원</b> 무통장 입금<br>
       <b>3.</b> 잔금은 <b>현장에서 결제</b>
     </div>
-    <p class="warnline">※ 계좌번호는 예약 접수 후 담당자가 개별 안내드립니다. 요금은 거리·시간·차량 종류에 따라 달라지므로 사전 확정 금액은 안내드리지 않습니다.</p>
+    <a class="btn btn-kakao ch-link" href="https://pf.kakao.com/_xgMuaX/chat" target="_blank" rel="noopener">
+      💬 카카오톡 채널에서 예약금·계좌 안내받기
+    </a>
+    <p class="warnline">※ <b>입금 계좌와 예약금 안내는 카카오톡 채널</b>에서 확인하실 수 있습니다. 요금은 거리·시간·차량 종류에 따라 달라지므로 사전 확정 금액은 안내드리지 않습니다.</p>
+  </section>
+
+  <!-- 이용 안내 -->
+  <section class="card">
+    <h2>📌 이용 안내</h2>
+    <p class="hint">접수 전에 확인해 주세요.</p>
+    <div class="guide">
+      <div class="gi"><span class="gk">상담·접수 시간</span><span class="gv" id="hoursText2">평일 13:00 ~ 익일 새벽 02:00</span></div>
+      <div class="gi"><span class="gk">예약 시기</span><span class="gv">스케줄 조율상 당일 예약은 어렵습니다. <b>최소 1~2일 전</b> 예약을 부탁드립니다.</span></div>
+      <div class="gi"><span class="gk">운행 구간</span><span class="gv">공항·골프장·지방출장 등 <b>예약 운행만</b> 가능합니다. 단거리 시내 이동 예약은 불가합니다.</span></div>
+      <div class="gi"><span class="gk">문의 방식</span><span class="gv">운행 중에는 전화상담이 어려워 <b>문자·카카오톡</b> 상담을 권장합니다.</span></div>
+    </div>
   </section>
 
   <!-- 설치 안내 -->
@@ -345,6 +377,8 @@ footer .biz{margin-top:6px;font-size:12px;color:#9AA3AD}
     phone: "01086220611",
     phoneText: "010-8622-0611",
     kakao: "https://pf.kakao.com/_xgMuaX/chat",
+    hours: "평일 13:00 ~ 익일 새벽 02:00",           // 문자·카카오톡 상담 시간
+    soonHours: 24,                                  // 이 시간 이내 탑승이면 '임박' 안내를 띄운다
     bizLine: "문의 010-8622-0611 · 카카오톡 채널 '벤티365'"
   };
 
@@ -437,19 +471,19 @@ footer .biz{margin-top:6px;font-size:12px;color:#9AA3AD}
     });
   }
 
-  /* ── 메시지 생성 ── */
+  /* ── 메시지 생성 (블로그 「문자 남겨주실 양식」과 동일한 항목 순서) ── */
   function buildMessage(d){
     var L = [];
     L.push("[벤티365 예약 요청]");
     L.push("· 서비스: " + d.svc);
-    L.push("· 성함: " + d.name);
+    L.push("· 예약자 성함: " + d.name);
     L.push("· 연락처: " + d.phone);
-    L.push("· 일시: " + fmtWhen(d.when));
-    L.push("· 출발: " + d.from);
-    L.push("· 도착: " + d.to);
-    L.push("· 인원: " + (d.pax || "미입력"));
-    L.push("· 수하물/골프채: " + (d.bag || "미입력"));
-    if (d.memo) L.push("· 요청: " + d.memo);
+    L.push("· 탑승 날짜 및 시간: " + fmtWhen(d.when));
+    L.push("· 출발지: " + d.from);
+    L.push("· 도착지: " + d.to);
+    L.push("· 탑승 인원: " + (d.pax || "미입력"));
+    L.push("· 수하물 수량(캐리어, 골프백 등): " + (d.bag || "미입력"));
+    if (d.memo) L.push("· 요청 사항: " + d.memo);
     L.push("");
     L.push("→ 예상 요금과 예약금 안내 부탁드립니다.");
     return L.join("\n");
@@ -469,6 +503,16 @@ footer .biz{margin-top:6px;font-size:12px;color:#9AA3AD}
       var box = $("f-" + k);
       if (box.classList.contains("bad") && !e[k]) box.classList.remove("bad");
     });
+
+    // 임박 탑승(기본 24시간 이내)이면 조율 안내를 띄운다 — 블로그 안내문의 "당일 예약은 어렵습니다"와 같은 취지
+    var soon = $("soon");
+    if (d.when) {
+      var t = new Date(d.when).getTime();
+      var gap = t - Date.now();
+      soon.classList.toggle("on", !isNaN(t) && gap > 0 && gap < CFG.soonHours * 3600000);
+    } else {
+      soon.classList.remove("on");
+    }
   }
 
   /* ── 토스트 ── */
@@ -588,8 +632,9 @@ footer .biz{margin-top:6px;font-size:12px;color:#9AA3AD}
     el.min = nowLocalValue();
   }
 
-  /* ── 문의처 푸터 ── */
-  $("bizLine").textContent = CFG.bizLine;
+  /* ── 문의처·상담시간 푸터 ── */
+  $("bizLine").textContent = CFG.bizLine + " · 상담 " + CFG.hours;
+  ["hoursText", "hoursText2"].forEach(function(id){ if ($(id)) $(id).textContent = CFG.hours; });
 
   /* ── PWA 설치 ── */
   var deferred = null;
@@ -641,8 +686,9 @@ footer .biz{margin-top:6px;font-size:12px;color:#9AA3AD}
     var m = buildMessage(d);
     eq("메시지 헤더", m.split("\n")[0], "[벤티365 예약 요청]");
     eq("서비스 반영", m.indexOf("· 서비스: 공항 픽업") > -1, true);
-    eq("일시 포맷", m.indexOf("· 일시: 2027.01.05(화) 14:30") > -1, true);
-    eq("요청 반영", m.indexOf("· 요청: 카시트 필요") > -1, true);
+    eq("일시 포맷", m.indexOf("· 탑승 날짜 및 시간: 2027.01.05(화) 14:30") > -1, true);
+    eq("요청 반영", m.indexOf("· 요청 사항: 카시트 필요") > -1, true);
+    eq("블로그 양식 일치", m.indexOf("· 수하물 수량(캐리어, 골프백 등): 캐리어 2") > -1, true);
     eq("문의 문구", m.indexOf("예상 요금과 예약금 안내") > -1, true);
     eq("전화 포맷", fmtPhone("01012345678"), "010-1234-5678");
     eq("전화 포맷(짧음)", fmtPhone("01012"), "010-12");
@@ -652,6 +698,8 @@ footer .biz{margin-top:6px;font-size:12px;color:#9AA3AD}
     eq("동의 기본값", $("agree").checked, false);
     eq("연락처", CFG.phone, "01086220611");
     eq("카카오URL", CFG.kakao, "https://pf.kakao.com/_xgMuaX/chat");
+    eq("상담시간 설정", CFG.hours, "평일 13:00 ~ 익일 새벽 02:00");
+    eq("상담시간 화면반영", $("hoursText").textContent.indexOf("13:00") > -1 && $("hoursText2").textContent.indexOf("13:00") > -1, true);
     eq("필수요소-버튼3개", ["btnKakao","btnSms","btnCopy"].every(function(i){ return !!$(i); }), true);
     eq("서비스4종", document.querySelectorAll("#svcGrid button").length, 4);
     document.title = "SELFTEST " + out.filter(function(x){ return x.indexOf("FAIL") === 0; }).length + "fail/" + out.length + " | " + out.join(" || ");
