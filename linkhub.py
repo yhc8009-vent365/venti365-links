@@ -34,7 +34,7 @@ from datetime import date
 
 CSS = """
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:%(bg)s;--card:%(card)s;--accent:%(accent)s;--text:%(text)s;--muted:%(muted)s;--radius:%(radius)dpx}
+:root{--bg:%(bg)s;--card:%(card)s;--accent:%(accent)s;--on-accent:%(on_accent)s;--text:%(text)s;--muted:%(muted)s;--radius:%(radius)dpx}
 html{-webkit-text-size-adjust:100%%}
 body{background:var(--bg);color:var(--text);
  font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;
@@ -54,7 +54,7 @@ body{background:var(--bg);color:var(--text);
 .cta a{flex:1 1 0;min-width:132px;text-align:center;text-decoration:none;font-weight:700;font-size:14px;
  padding:13px 10px;border-radius:12px;background:var(--card);color:var(--text);
  border:1px solid rgba(0,0,0,.07);box-shadow:0 2px 8px rgba(0,0,0,.05);transition:.15s}
-.cta a.primary{background:var(--accent);color:#fff;border-color:transparent}
+.cta a.primary{background:var(--accent);color:var(--on-accent,#fff);border-color:transparent}
 .cta a:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.12)}
 /* ④ 검색·카테고리 */
 .tools{position:sticky;top:0;z-index:9;background:var(--bg);padding:8px 0 10px}
@@ -65,7 +65,7 @@ body{background:var(--bg);color:var(--text);
 .chips::-webkit-scrollbar{display:none}
 .chip{white-space:nowrap;font-size:12.5px;font-weight:600;padding:7px 12px;border-radius:999px;
  background:var(--card);color:var(--muted);border:1px solid rgba(0,0,0,.07);cursor:pointer;transition:.15s}
-.chip.on{background:var(--accent);color:#fff;border-color:transparent}
+.chip.on{background:var(--accent);color:var(--on-accent,#fff);border-color:transparent}
 /* ⑤ 카드 */
 .card{display:block;background:var(--card);border-radius:var(--radius);overflow:hidden;margin-bottom:12px;
  text-decoration:none;color:inherit;box-shadow:0 2px 10px rgba(0,0,0,.06);transition:.16s}
@@ -79,13 +79,13 @@ body{background:var(--bg);color:var(--text);
  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .body .meta{font-size:11.5px;color:var(--muted);margin-top:9px;display:flex;gap:8px;align-items:center}
 .no{font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums}
-.badge{font-size:10.5px;font-weight:800;padding:3px 7px;border-radius:6px;background:var(--accent);color:#fff}
+.badge{font-size:10.5px;font-weight:800;padding:3px 7px;border-radius:6px;background:var(--accent);color:var(--on-accent,#fff)}
 .badge.soft{background:rgba(0,0,0,.06);color:var(--muted)}
 /* ⑥ 푸터 */
 footer{text-align:center;font-size:11.5px;color:var(--muted);line-height:1.8;padding:22px 6px 0;white-space:pre-line}
 .empty{text-align:center;color:var(--muted);font-size:13px;padding:26px 0}
 @media (prefers-color-scheme:dark){
- :root{--bg:#0e1413;--card:#1b2220;--text:#eef3f1;--muted:#9dada9}
+ :root{--bg:%(dbg)s;--card:%(dcard)s;--accent:%(daccent)s;--on-accent:%(don_accent)s;--text:%(dtext)s;--muted:%(dmuted)s}
  .cta a,.search,.chip{border-color:rgba(255,255,255,.10)}
  .thumb{background:#232b29}
 }
@@ -157,8 +157,18 @@ def _head_assets(cfg, e, th):
 
 def render(cfg, base_dir="."):
     th = {"bg": "#eef4f2", "card": "#ffffff", "accent": "#0f7b6c",
-          "text": "#16211f", "muted": "#5d6b68", "radius": 18}
+          "text": "#16211f", "muted": "#5d6b68", "radius": 18,
+          "on_accent": "#ffffff"}
     th.update(cfg.get("theme") or {})
+    # 다크 모드 값 — 설정(theme_dark)이 없으면 기존 하드코딩 기본값을 그대로 쓴다(하위 호환).
+    # accent 를 지정하지 않으면 라이트와 같은 accent 를 유지한다(기존 동작 보존).
+    dk = cfg.get("theme_dark") or {}
+    th["dbg"] = dk.get("bg", "#0e1413")
+    th["dcard"] = dk.get("card", "#1b2220")
+    th["daccent"] = dk.get("accent", th["accent"])
+    th["don_accent"] = dk.get("on_accent", th.get("on_accent", "#ffffff"))
+    th["dtext"] = dk.get("text", "#eef3f1")
+    th["dmuted"] = dk.get("muted", "#9dada9")
     embed = cfg.get("embed_images", True)
     e = html.escape
 
