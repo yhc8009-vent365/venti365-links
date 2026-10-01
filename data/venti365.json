@@ -12,15 +12,19 @@
   "radius": 18
  },
  "notice": {
-  "text": "예약 문의 010-8622-0611 · 카카오톡 채널 '벤티365' · 아래 링크는 블로그 글과 상담 채널로 연결됩니다.",
+  "text": "예약 문의 010-8622-0611 · 카카오톡 채널 '벤티365' · 맨 위 「예약 앱」에서 1분 만에 접수할 수 있습니다.",
   "bg": "#0f2b26",
   "fg": "#dcf5ef"
  },
  "cta": [
   {
-   "label": "카카오톡 채널 상담",
-   "url": "https://pf.kakao.com/_xgMuaX/chat",
+   "label": "📲 예약 앱 열기",
+   "url": "app/",
    "primary": true
+  },
+  {
+   "label": "카카오톡 채널 상담",
+   "url": "https://pf.kakao.com/_xgMuaX/chat"
   },
   {
    "label": "전화 문의",
@@ -28,6 +32,16 @@
   }
  ],
  "blocks": [
+  {
+   "cat": "공지·예약",
+   "no": "",
+   "badge": "앱",
+   "title": "📲 벤티365 예약 앱 — 1분 접수",
+   "url": "app/",
+   "image": "images/app_card.jpg",
+   "desc": "성함·연락처·일시·출발/도착지만 입력하면 문자 또는 카카오톡으로 바로 접수됩니다. 홈 화면에 추가하면 앱처럼 쓸 수 있습니다.",
+   "date": ""
+  },
   {
    "cat": "공항",
    "title": "예약 차량 탑승 전 확인 항목 — 요금·경로·짐 점검법",
@@ -299,7 +313,7 @@
    "no": "001"
   }
  ],
- "footer": "벤티365 · blog.naver.com/venti365\n문의 010-8622-0611 · 카카오톡 채널 '벤티365'\n글 30건 · 최신 갱신 기준 RSS 제공분",
+ "footer": "벤티365 · blog.naver.com/venti365\n문의 010-8622-0611 · 카카오톡 채널 '벤티365'\n글 31건 · 최신 갱신 기준 RSS 제공분",
  "search": true,
  "embed_images": false
 }

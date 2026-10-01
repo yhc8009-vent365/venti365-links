@@ -24,6 +24,10 @@ PHONE = "010-8622-0611"
 KAKAO = "https://pf.kakao.com/_xgMuaX/chat"
 BLOG = f"https://blog.naver.com/{BLOG_ID}"
 
+# 예약 앱(PWA) — 같은 저장소의 docs/app/index.html 로 배포된다(상대경로로 연결).
+APP_URL = "app/"
+APP_IMG = "app_card.jpg"
+
 CAT_ORDER = ["공지·예약", "공항", "골프", "출장", "기차·KTX", "여행정보"]
 
 # 썸네일은 반드시 자체 보관한다.
@@ -142,6 +146,20 @@ def main():
             blocks.insert(0, b)
             break
 
+    # 🆕 예약 앱(PWA) 카드 — 항상 최상단 고정. RSS 에 없는 고정 항목이므로 여기서 직접 넣는다.
+    #    썸네일(app_card.jpg)은 자체 보관 파일이라 prune 대상에서 제외되도록 표시해 둔다.
+    if os.path.exists(os.path.join(IMG_DIR, APP_IMG)):
+        _USED_IMAGES.add(APP_IMG)
+        blocks.insert(0, {
+            "cat": "공지·예약", "no": "", "badge": "앱",
+            "title": "📲 벤티365 예약 앱 — 1분 접수",
+            "url": APP_URL, "image": "images/" + APP_IMG,
+            "desc": "성함·연락처·일시·출발/도착지만 입력하면 문자 또는 카카오톡으로 바로 접수됩니다. 홈 화면에 추가하면 앱처럼 쓸 수 있습니다.",
+            "date": "",
+        })
+    else:
+        print(f"  ! 예약 앱 썸네일 없음({APP_IMG}) — 앱 카드는 건너뜁니다")
+
     cats = [c for c in CAT_ORDER if any(b["cat"] == c for b in blocks)]
     pruned = prune_images()
 
@@ -153,9 +171,10 @@ def main():
         "theme": {"bg": "#eef4f2", "card": "#ffffff", "accent": "#0f7b6c",
                   "text": "#16211f", "muted": "#5d6b68", "radius": 18},
         "notice": {"text": "예약 문의 " + PHONE + " · 카카오톡 채널 '벤티365' · "
-                           "아래 링크는 블로그 글과 상담 채널로 연결됩니다.",
+                           "맨 위 「예약 앱」에서 1분 만에 접수할 수 있습니다.",
                    "bg": "#0f2b26", "fg": "#dcf5ef"},
-        "cta": [{"label": "카카오톡 채널 상담", "url": KAKAO, "primary": True},
+        "cta": [{"label": "📲 예약 앱 열기", "url": APP_URL, "primary": True},
+                {"label": "카카오톡 채널 상담", "url": KAKAO},
                 {"label": "전화 문의", "url": "tel:" + PHONE.replace("-", "")}],
         "blocks": blocks,
         "footer": f"벤티365 · blog.naver.com/{BLOG_ID}\n"
