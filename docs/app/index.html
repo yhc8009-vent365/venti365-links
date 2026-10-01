@@ -148,6 +148,10 @@ button{cursor:pointer;border:0;background:none}
 .btn[disabled]{opacity:.45}
 a.btn{text-decoration:none}
 .ch-link{margin-top:14px}
+.tag{
+  font-size:11.5px;font-weight:800;background:rgba(255,255,255,.22);
+  border-radius:999px;padding:3px 8px;margin-left:2px;letter-spacing:-.01em
+}
 
 /* ── 안내 ── */
 .note{
@@ -304,14 +308,16 @@ footer .biz{margin-top:6px;font-size:12px;color:#9AA3AD}
     </div>
 
     <div class="acts">
-      <button type="button" class="btn btn-kakao" id="btnKakao">💬 카카오톡으로 접수하기</button>
-      <button type="button" class="btn btn-sms" id="btnSms">✉️ 문자로 접수하기</button>
+      <button type="button" class="btn btn-sms" id="btnSms">✉️ 문자로 접수하기 <span class="tag">가장 빠름</span></button>
+      <button type="button" class="btn btn-kakao" id="btnKakao">💬 카카오톡 채널 열고 붙여넣기</button>
       <button type="button" class="btn btn-ghost" id="btnCopy">접수 내용 복사만 하기</button>
     </div>
 
     <p class="warnline">
-      · 앱에서 자동 전송되지 않습니다. 버튼을 누르면 <b>문자 앱</b> 또는 <b>카카오톡 채널</b>이 열리고, 내용을 그대로 보내주시면 접수됩니다.<br>
-      · 카카오톡 접수 시 내용이 자동으로 복사되니 채팅창에 붙여넣기(꾹 누르기 → 붙여넣기)만 해주세요.
+      · 앱이 자동으로 보내지는 않습니다. 버튼을 누르면 <b>문자 앱</b> 또는 <b>카카오톡 채널</b>이 열립니다.<br>
+      · <b>문자</b> — 내용이 문자창에 채워집니다. <b>전송 버튼만</b> 누르면 접수됩니다.<br>
+      · <b>카카오톡</b> — 내용이 자동 복사됩니다. 채널 채팅창에서 <b>입력창을 길게 눌러 → 붙여넣기 → 전송</b> 해주세요.<br>
+      · 붙여넣기가 안 되면 <b>복사만 하기</b>를 누르고 원하는 곳에 붙여넣으시면 됩니다.
     </p>
   </section>
 
@@ -557,37 +563,54 @@ footer .biz{margin-top:6px;font-size:12px;color:#9AA3AD}
     toast("문자 앱이 열립니다. 그대로 전송해 주세요.");
   });
 
-  /* ── 카카오톡 접수 ── */
-  function copyText(t){
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      return navigator.clipboard.writeText(t);
-    }
-    return new Promise(function(res, rej){
-      try {
-        var ta = document.createElement("textarea");
-        ta.value = t;
-        ta.setAttribute("readonly", "");
-        ta.style.position = "fixed";
-        ta.style.top = "-1000px";
-        document.body.appendChild(ta);
-        ta.select();
-        var ok = document.execCommand("copy");
-        document.body.removeChild(ta);
-        ok ? res() : rej(new Error("copy failed"));
-      } catch (err) { rej(err); }
-    });
+  /* ── 복사 ──
+     모바일에서 가장 확실한 건 '동기' 방식(execCommand)이다. 비동기 클립보드 API는
+     인앱 브라우저·구형 안드로이드에서 조용히 실패하는 경우가 있다. 동기 → 비동기 순으로 시도한다. */
+  function copySync(t){
+    try {
+      var ta = document.createElement("textarea");
+      ta.value = t;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.top = "0";
+      ta.style.left = "0";
+      ta.style.width = "1px";
+      ta.style.height = "1px";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      try { ta.setSelectionRange(0, t.length); } catch(e){}
+      var ok = false;
+      try { ok = document.execCommand("copy"); } catch(e){ ok = false; }
+      document.body.removeChild(ta);
+      return ok;
+    } catch (err) { return false; }
   }
 
+  function copyText(t){
+    if (copySync(t)) return Promise.resolve(true);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(t).then(function(){ return true; });
+    }
+    return Promise.reject(new Error("copy failed"));
+  }
+
+  /* ── 카카오톡 접수 ──
+     ⚠️ 이전 구현은 복사 후 setTimeout 으로 window.open 을 호출했다 → 모바일 브라우저가 '팝업'으로 보고
+        차단해 아무 일도 일어나지 않았다(2026-10-01 대표님 신고: "카톡은 안 돼").
+     → ① 복사는 동기로 끝내고 ② 이동은 window.location.href 로 한다(팝업 차단 대상이 아니다). */
   $("btnKakao").addEventListener("click", function(){
     var d = guard();
     if (!d) return;
     var msg = buildMessage(d);
-    copyText(msg).then(function(){
-      toast("접수 내용을 복사했습니다. 채팅창에 붙여넣어 주세요.");
-    }).catch(function(){
-      toast("복사가 안 되면 화면의 내용을 길게 눌러 복사해 주세요.");
-    });
-    setTimeout(function(){ window.open(CFG.kakao, "_blank"); }, 350);
+
+    if (!copySync(msg)) {
+      toast("자동 복사가 안 됐습니다. [접수 내용 복사만 하기]를 눌러 주세요.");
+      return;
+    }
+    toast("복사 완료! 채널 채팅창에서 길게 눌러 붙여넣기 하세요.");
+    setTimeout(function(){ window.location.href = CFG.kakao; }, 900);
   });
 
   /* ── 복사만 ── */
