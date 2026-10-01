@@ -33,6 +33,9 @@ APP_IMG = "app_card.jpg"
 FAVICON = "favicon-32.png"
 APPLE_TOUCH = "apple-touch-icon.png"
 OG_IMAGE = "https://yhc8009-vent365.github.io/venti365-links/og-image.png"
+# 프로필 아바타도 로고로 통일 (2026-10-02). 네이버 블로그 RSS 가 옛 사진을 계속 주는 동안
+# 브랜딩이 어긋나지 않게 로고를 직접 쓴다. 파일이 없으면 수집된 사진으로 자동 폴백.
+LOGO_AVATAR = "images/logo_avatar.png"
 
 CAT_ORDER = ["공지·예약", "공항", "골프", "출장", "기차·KTX", "여행정보"]
 
@@ -173,7 +176,8 @@ def main():
         "title": "벤티365",
         "handle": f"@{BLOG_ID} · 여행.공항·골프·출장",
         "bio": ch_desc or "공항·골프·출장 이동 정보와 예약 안내",
-        "avatar": avatar,
+        "avatar": (LOGO_AVATAR
+                   if os.path.exists(os.path.join(ROOT, LOGO_AVATAR)) else avatar),
         "favicon": FAVICON,
         "apple_touch_icon": APPLE_TOUCH,
         "og_image": OG_IMAGE,
