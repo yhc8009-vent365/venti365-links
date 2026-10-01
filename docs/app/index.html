@@ -180,6 +180,13 @@ a.btn{text-decoration:none}
 .dock .k{background:var(--kakao);color:var(--ink)}
 .dock .t{background:var(--ink);color:#fff}
 
+/* ── 앱 내부 브라우저 경고 ── */
+.inapp{display:none;background:#FFF4E5;border:1px solid #FFD79A;border-radius:var(--r);padding:14px 15px;margin-top:14px}
+.inapp.on{display:block}
+.inapp .t{font-size:14px;font-weight:800;color:#8A5000;margin-bottom:5px}
+.inapp .d{font-size:13px;color:#7A5A20;line-height:1.55}
+.inapp .d b{color:#5C3D00}
+
 /* ── 설치 배너 ── */
 .install{display:none;background:var(--ink);color:#fff;border-radius:var(--r);padding:15px 16px;margin-top:14px}
 .install.on{display:block}
@@ -224,6 +231,14 @@ footer .biz{margin-top:6px;font-size:12px;color:#9AA3AD}
     <h1>공항 픽업·골프·지방출장<br><em>1분 예약 접수</em></h1>
     <p>아래 정보만 입력하시면 <b>문자</b> 또는 <b>카카오톡</b>으로 바로 접수됩니다. 접수 후 예상 요금과 예약금을 안내해 드립니다.</p>
     <div class="hours">🕐 상담·접수 <b id="hoursText">평일 13:00 ~ 익일 새벽 02:00</b></div>
+  </section>
+
+  <!-- 앱 내부 브라우저 경고 (카카오톡·인스타 등에서 열었을 때) -->
+  <section class="inapp" id="inappBox">
+    <div class="t">⚠️ 카카오톡(또는 앱) 내부 브라우저로 보고 계십니다</div>
+    <div class="d">이 상태에서는 <b>카카오톡 채널로 이동이 막힐 수 있습니다.</b>
+      오른쪽 위 <b>⋯</b>(또는 공유 버튼) → <b>다른 브라우저로 열기 / Safari로 열기</b>를 눌러 다시 열어주세요.<br>
+      <b>문자 접수는 이 상태에서도 정상 작동합니다.</b></div>
   </section>
 
   <!-- ① 서비스 선택 -->
@@ -309,7 +324,7 @@ footer .biz{margin-top:6px;font-size:12px;color:#9AA3AD}
 
     <div class="acts">
       <button type="button" class="btn btn-sms" id="btnSms">✉️ 문자로 접수하기 <span class="tag">가장 빠름</span></button>
-      <button type="button" class="btn btn-kakao" id="btnKakao">💬 카카오톡 채널 열고 붙여넣기</button>
+      <a class="btn btn-kakao" id="btnKakao" href="https://pf.kakao.com/_xgMuaX/chat">💬 카카오톡 채널 열고 붙여넣기</a>
       <button type="button" class="btn btn-ghost" id="btnCopy">접수 내용 복사만 하기</button>
     </div>
 
@@ -596,21 +611,28 @@ footer .biz{margin-top:6px;font-size:12px;color:#9AA3AD}
     return Promise.reject(new Error("copy failed"));
   }
 
-  /* ── 카카오톡 접수 ──
-     ⚠️ 이전 구현은 복사 후 setTimeout 으로 window.open 을 호출했다 → 모바일 브라우저가 '팝업'으로 보고
-        차단해 아무 일도 일어나지 않았다(2026-10-01 대표님 신고: "카톡은 안 돼").
-     → ① 복사는 동기로 끝내고 ② 이동은 window.location.href 로 한다(팝업 차단 대상이 아니다). */
-  $("btnKakao").addEventListener("click", function(){
-    var d = guard();
-    if (!d) return;
-    var msg = buildMessage(d);
-
-    if (!copySync(msg)) {
-      toast("자동 복사가 안 됐습니다. [접수 내용 복사만 하기]를 눌러 주세요.");
+  /* ── 카카오톡 채널 ──
+     ⚠️ 1차 실패(2026-10-01): 복사 후 setTimeout + window.open → 모바일이 팝업으로 차단, 아무 일도 안 일어남.
+     ⚠️ 2차 실패(2026-10-02): copySync 성공을 조건으로 삼아 실패 시 return → 아이폰/인앱 브라우저에서
+        execCommand 가 false 를 돌려주면 채널조차 열리지 않았다.
+     → 최종 구조: 이 버튼은 <a href> 실제 링크다. 브라우저가 '무조건' 채널을 연다.
+        JS 는 복사만 '덤으로' 시도하고, 실패해도 이동을 막지 않는다.
+        (검증 실패 시에만 기본 이동을 취소한다) */
+  $("btnKakao").addEventListener("click", function(ev){
+    var d = collect(), e = errors(d);
+    if (Object.keys(e).length || !d.agree) {   // 입력이 덜 됐으면 안내만 하고 이동 취소
+      ev.preventDefault();
+      guard();
       return;
     }
-    toast("복사 완료! 채널 채팅창에서 길게 눌러 붙여넣기 하세요.");
-    setTimeout(function(){ window.location.href = CFG.kakao; }, 900);
+    var msg = buildMessage(d);
+    var ok = copySync(msg);
+    if (!ok && navigator.clipboard && navigator.clipboard.writeText) {
+      try { navigator.clipboard.writeText(msg); } catch(e2){}
+    }
+    toast(ok ? "복사했습니다. 채널 채팅창에서 길게 눌러 붙여넣기 하세요."
+             : "채널을 엽니다. 붙여넣기가 안 되면 [접수 내용 복사만 하기]를 먼저 눌러주세요.");
+    // 여기서 return 하지 않는다 — <a> 기본 이동이 그대로 진행된다.
   });
 
   /* ── 복사만 ── */
@@ -691,6 +713,15 @@ footer .biz{margin-top:6px;font-size:12px;color:#9AA3AD}
     }
   }
 
+  /* 앱 내부 브라우저(카카오톡·인스타·네이버 등)에서는 채널 이동이 막힌다 → 먼저 안내한다.
+     실제 신고: 카카오톡으로 받은 링크를 카카오톡 안에서 열면 채널로 다시 들어가지지 않는다. */
+  function inAppHint(){
+    var ua = navigator.userAgent || "";
+    if (/KAKAOTALK|Instagram|FBAN|FBAV|FB_IAB|NAVER\(inapp|Line\/|SnapChat/i.test(ua)) {
+      $("inappBox").classList.add("on");
+    }
+  }
+
   /* ── 서비스워커 ── */
   if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0) {
     window.addEventListener("load", function(){
@@ -733,6 +764,7 @@ footer .biz{margin-top:6px;font-size:12px;color:#9AA3AD}
     loadDraft();
     update();
     iosInstallHint();
+    inAppHint();
     if (/[?&]selftest=1/.test(location.search)) selftest();
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
