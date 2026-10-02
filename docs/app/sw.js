@@ -1,10 +1,13 @@
 /* 벤티 365 예약 앱 — 서비스워커
    목적: ① 홈 화면 설치 요건 충족 ② 인터넷이 약하거나 끊겨도 화면이 뜨게 함
-   원칙: 앱 껍데기(HTML·매니페스트·아이콘)만 캐시한다. 사용자가 입력한 예약 내용은 캐시하지 않는다. */
-var CACHE = "venti365-app-v1";
+   원칙: 앱 껍데기(HTML·매니페스트·아이콘)만 캐시한다. 사용자가 입력한 예약 내용은 캐시하지 않는다.
+   변경(v2): 관리자 페이지(admin.html) 추가 + 화면별로 캐시 키를 분리(예전엔 admin.html 로 오프라인
+             진입하면 예약 앱 화면이 대신 떴다 — 경로별 키로 고쳤다). */
+var CACHE = "venti365-app-v2";
 var SHELL = [
   "./",
   "./index.html",
+  "./admin.html",
   "./manifest.json",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
@@ -38,14 +41,18 @@ self.addEventListener("fetch", function (e) {
 
   // 문서: 네트워크 우선, 실패하면 캐시 (최신 내용 반영 우선)
   if (req.mode === "navigate" || (req.headers.get("accept") || "").indexOf("text/html") > -1) {
+    var isAdmin = /admin\.html?$/i.test(url.pathname || "");
+    var key = isAdmin ? "./admin.html" : "./index.html";
     e.respondWith(
       fetch(req).then(function (res) {
-        var copy = res.clone();
-        caches.open(CACHE).then(function (c) { c.put("./index.html", copy); });
+        if (res && res.ok) {
+          var copy = res.clone();
+          caches.open(CACHE).then(function (c) { c.put(key, copy); });
+        }
         return res;
       }).catch(function () {
-        return caches.match("./index.html").then(function (hit) {
-          return hit || caches.match("./");
+        return caches.match(key).then(function (hit) {
+          return hit || caches.match("./index.html") || caches.match("./");
         });
       })
     );

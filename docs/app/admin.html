@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>벤티 365 — 관리자 (배차)</title>
+
+<meta name="theme-color" content="#191919">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="벤티365 관리자">
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --kakao:#FEE500; --kakao-soft:#FFFBE0; --kakao-press:#F2D900;
+  --ink:#191919; --sub:#4E5968; --muted:#8B95A1;
+  --bg:#F2F4F6; --card:#FFFFFF; --line:#E5E8EB;
+  --blue:#3182F6; --blue-soft:#E8F1FE;
+  --green:#00B26B; --green-soft:#E6F7F0;
+  --orange:#F59E0B; --orange-soft:#FFF6E5;
+  --red:#F04452; --red-soft:#FFF0F1;
+  --r:16px; --r-sm:12px;
+  --safe-b:env(safe-area-inset-bottom,0px);
+}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;
+  font-size:16px; line-height:1.55; letter-spacing:-.01em;
+  -webkit-font-smoothing:antialiased; padding-bottom:calc(30px + var(--safe-b));
+}
+img{display:block;max-width:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+.wrap{max-width:640px;margin:0 auto;padding:0 16px}
+.hidden{display:none !important}
+
+/* ── 잠금 화면 ── */
+#gate{
+  position:fixed;inset:0;z-index:200;background:var(--ink);
+  display:flex;align-items:center;justify-content:center;padding:24px;
+}
+#gate .box{width:100%;max-width:360px;text-align:center;color:#fff}
+#gate .mark{width:56px;height:56px;margin:0 auto 14px;border-radius:16px}
+#gate h1{font-size:19px;font-weight:800;letter-spacing:-.03em}
+#gate p{font-size:13.5px;color:#A9AFB8;margin:6px 0 20px;line-height:1.6}
+#gate input{
+  width:100%;border-radius:13px;border:1.5px solid #3A3F45;background:#23272B;
+  color:#fff;padding:16px;font-size:18px;text-align:center;letter-spacing:.2em
+}
+#gate input:focus{outline:none;border-color:var(--kakao)}
+#gate button{
+  width:100%;margin-top:11px;border-radius:13px;padding:16px;font-size:16.5px;font-weight:800;
+  background:var(--kakao);color:var(--ink)
+}
+#gate .msg{font-size:13px;color:#FF8A94;min-height:20px;margin-top:11px;font-weight:600}
+#gate .tip{font-size:12px;color:#6E757D;margin-top:16px;line-height:1.6}
+
+/* ── 상단바 ── */
+.topbar{
+  position:sticky;top:0;z-index:40;background:var(--ink);color:#fff;
+  padding:calc(11px + env(safe-area-inset-top,0px)) 0 11px;
+}
+.topbar .wrap{display:flex;align-items:center;gap:9px}
+.brand{display:flex;align-items:center;gap:8px;font-weight:800;font-size:17px;letter-spacing:-.03em}
+.brand .mark{width:28px;height:28px;flex:none}
+.brand small{font-size:12px;font-weight:700;background:var(--kakao);color:var(--ink);border-radius:999px;padding:3px 9px}
+.topbar .spacer{flex:1}
+.tbtn{background:rgba(255,255,255,.14);color:#fff;border-radius:999px;padding:8px 13px;font-size:13px;font-weight:700}
+.tbtn:active{transform:scale(.97)}
+
+/* ── 탭 ── */
+.tabs{position:sticky;top:calc(50px + env(safe-area-inset-top,0px));z-index:35;background:var(--bg);padding:10px 0 6px}
+.tabs .in{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;background:#E8EBEE;border-radius:13px;padding:4px}
+.tabs button{border-radius:10px;padding:11px 4px;font-size:14px;font-weight:800;color:var(--sub)}
+.tabs button[aria-selected="true"]{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.09)}
+.tabs .badge{display:inline-block;background:var(--kakao);color:var(--ink);border-radius:999px;font-size:11px;padding:1px 6px;margin-left:4px;vertical-align:1px}
+
+/* ── 카드 ── */
+.card{background:var(--card);border-radius:var(--r);padding:18px;margin-top:12px}
+.card>h2{font-size:16px;font-weight:800;letter-spacing:-.03em;display:flex;align-items:center;gap:8px}
+.card>.hint{font-size:13px;color:var(--muted);margin:4px 0 14px}
+.card>h2+.hint{margin-bottom:14px}
+.step{
+  display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;
+  background:var(--ink);color:var(--kakao);font-size:12px;font-weight:800;flex:none
+}
+
+/* ── 입력 ── */
+.fld{margin-bottom:13px}
+.fld label{display:block;font-size:13px;font-weight:700;color:var(--sub);margin-bottom:6px}
+.fld label .req{color:var(--red)}
+.fld input,.fld select,.fld textarea{
+  width:100%;background:#F9FAFB;border:1px solid var(--line);border-radius:var(--r-sm);
+  padding:13px 13px;font-size:16px
+}
+.fld select{appearance:none;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234E5968' stroke-width='2.4'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:18px;padding-right:38px}
+.fld textarea{min-height:66px;resize:vertical;line-height:1.5}
+.fld input:focus,.fld select:focus,.fld textarea:focus{outline:none;border-color:var(--blue);background:#fff}
+.fld.bad input,.fld.bad select{border-color:var(--red);background:#FFF5F6}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row2>.fld{margin-bottom:13px}
+
+/* ── 붙여넣기 파서 ── */
+.pastebox{background:var(--blue-soft);border-radius:var(--r-sm);padding:14px}
+.pastebox textarea{
+  width:100%;min-height:96px;border:1px solid #C9DDFB;border-radius:10px;padding:12px;
+  font-size:13.5px;line-height:1.5;background:#fff;resize:vertical;font-family:inherit
+}
+.pastebox textarea:focus{outline:none;border-color:var(--blue)}
+
+/* ── 버튼 ── */
+.btn{
+  width:100%;border-radius:13px;padding:15px;font-size:15.5px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;gap:7px;letter-spacing:-.02em
+}
+.btn:active{transform:scale(.985)}
+.btn-kakao{background:var(--kakao);color:var(--ink)}
+.btn-dark{background:var(--ink);color:#fff}
+.btn-blue{background:var(--blue);color:#fff}
+.btn-ghost{background:#fff;border:1.5px solid var(--line);color:var(--sub)}
+.btn-danger{background:var(--red-soft);color:var(--red)}
+.btn-sm{padding:11px;font-size:14px;border-radius:11px}
+.acts{display:grid;gap:8px;margin-top:14px}
+.acts2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.acts3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:10px}
+
+/* ── 미리보기 ── */
+.sum{background:var(--kakao-soft);border-radius:var(--r-sm);padding:14px;margin-top:12px}
+.sum h3{font-size:12.5px;font-weight:800;color:var(--sub);margin-bottom:7px;display:flex;align-items:center;justify-content:space-between}
+.sum pre{font-family:inherit;font-size:13.5px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+
+/* ── 요약 통계 ── */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:12px}
+.stat{background:#fff;border-radius:var(--r-sm);padding:12px 6px;text-align:center}
+.stat .n{font-size:20px;font-weight:800;letter-spacing:-.03em}
+.stat .k{font-size:11.5px;color:var(--muted);font-weight:700;margin-top:2px}
+.stat.b .n{color:var(--blue)} .stat.g .n{color:var(--green)}
+.stat.o .n{color:var(--orange)} .stat.r .n{color:var(--red)}
+
+/* ── 필터 ── */
+.chips{display:flex;gap:6px;overflow-x:auto;padding:2px 0;margin-top:12px;-webkit-overflow-scrolling:touch}
+.chips button{
+  flex:none;border-radius:999px;padding:8px 14px;font-size:13.5px;font-weight:700;
+  background:#fff;border:1px solid var(--line);color:var(--sub)
+}
+.chips button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+
+/* ── 배차 카드 ── */
+.item{background:#fff;border-radius:var(--r);padding:15px;margin-top:10px;border:1px solid var(--line)}
+.item .hd{display:flex;align-items:flex-start;gap:9px}
+.item .hh{flex:1;min-width:0}
+.item .t{font-size:16.5px;font-weight:800;letter-spacing:-.03em}
+.item .dt{font-size:13px;color:var(--muted);font-weight:700;margin-top:1px}
+.item .nm{font-size:14.5px;font-weight:700;margin-top:9px}
+.item .nm a{color:inherit;text-decoration:none}
+.item .rt{font-size:13.5px;color:var(--sub);margin-top:4px;line-height:1.5}
+.item .meta{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+.item .pill{font-size:12px;font-weight:700;background:var(--bg);color:var(--sub);border-radius:999px;padding:4px 10px}
+.item .memo{font-size:13px;color:var(--orange);background:var(--orange-soft);border-radius:9px;padding:8px 10px;margin-top:9px;line-height:1.5}
+.item .fare{font-size:14px;font-weight:800;margin-top:9px}
+.item .fare em{font-style:normal;color:var(--muted);font-weight:700;font-size:12.5px}
+.st{font-size:11.5px;font-weight:800;border-radius:999px;padding:4px 10px;flex:none;white-space:nowrap}
+.st-접수{background:var(--bg);color:var(--sub)}
+.st-확정{background:var(--blue-soft);color:var(--blue)}
+.st-운행중{background:var(--orange-soft);color:#B26A00}
+.st-완료{background:var(--green-soft);color:var(--green)}
+.st-취소{background:var(--red-soft);color:var(--red)}
+.item .ops{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:11px}
+.item .ops button{border-radius:10px;padding:10px 4px;font-size:12.5px;font-weight:800;background:var(--bg);color:var(--sub)}
+.item .ops button.pri{background:var(--kakao);color:var(--ink)}
+.empty{text-align:center;color:var(--muted);font-size:13.5px;padding:34px 10px;line-height:1.7}
+
+/* ── 설정 목록 ── */
+.drv{display:flex;align-items:center;gap:10px;background:#F9FAFB;border-radius:var(--r-sm);padding:12px;margin-top:8px}
+.drv .i{flex:1;min-width:0}
+.drv .a{font-size:14.5px;font-weight:800}
+.drv .b{font-size:12.5px;color:var(--muted);margin-top:2px}
+.drv button{font-size:12.5px;font-weight:800;color:var(--red);padding:6px 10px;border-radius:8px;background:#fff;border:1px solid var(--line)}
+
+/* ── 토스트 ── */
+.toast{
+  position:fixed;left:50%;bottom:calc(26px + var(--safe-b));transform:translate(-50%,16px);
+  background:rgba(25,25,25,.95);color:#fff;font-size:14px;font-weight:600;
+  padding:12px 18px;border-radius:12px;opacity:0;pointer-events:none;
+  transition:opacity .22s,transform .22s;z-index:300;max-width:88vw;text-align:center;line-height:1.5
+}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+.note{border-left:4px solid var(--blue);background:var(--blue-soft);border-radius:10px;padding:12px 13px;font-size:13px;color:#1B4B8F;line-height:1.6;margin-top:12px}
+.note b{color:#123A70}
+.note.warn{border-color:var(--orange);background:var(--orange-soft);color:#8A5000}
+.note.warn b{color:#5C3D00}
+.warnline{font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.6}
+footer{padding:22px 0 6px;text-align:center;font-size:12px;color:var(--muted);line-height:1.7}
+@media (max-width:360px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .item .ops{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ 잠금 화면 ══ -->
+<div id="gate">
+  <div class="box">
+    <span class="mark"><svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;border-radius:16px"><rect width="512" height="512" rx="112" fill="#FEE500"/><path d="M136 104 L256 292 L376 104" fill="none" stroke="#191919" stroke-width="52" stroke-linecap="round" stroke-linejoin="round"/><text x="256" y="440" text-anchor="middle" font-family="'Helvetica Neue','Apple SD Gothic Neo',sans-serif" font-size="110" font-weight="800" fill="#191919" letter-spacing="1">365</text></svg></span>
+    <h1>벤티 365 · 관리자</h1>
+    <p>배차 관리 페이지입니다.<br>비밀번호를 입력해 주십시오.</p>
+    <input type="password" id="pw" inputmode="numeric" autocomplete="current-password" placeholder="••••••" maxlength="32">
+    <button type="button" id="pwGo">들어가기</button>
+    <div class="msg" id="pwMsg"></div>
+    <div class="tip">이 페이지는 검색에 노출되지 않도록 설정되어 있습니다.<br>주소를 즐겨찾기에 저장해 두십시오.</div>
+  </div>
+</div>
+
+<!-- ══ 본문 ══ -->
+<div id="app" class="hidden">
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="brand">
+      <span class="mark" aria-hidden="true"><svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;border-radius:8px"><rect width="512" height="512" rx="112" fill="#FEE500"/><path d="M136 104 L256 292 L376 104" fill="none" stroke="#191919" stroke-width="52" stroke-linecap="round" stroke-linejoin="round"/><text x="256" y="440" text-anchor="middle" font-family="'Helvetica Neue','Apple SD Gothic Neo',sans-serif" font-size="110" font-weight="800" fill="#191919" letter-spacing="1">365</text></svg></span>
+      벤티 365 <small>관리자</small>
+    </div>
+    <div class="spacer"></div>
+    <button type="button" class="tbtn" id="btnLock">잠금</button>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <nav class="tabs">
+    <div class="in" role="tablist">
+      <button type="button" role="tab" aria-selected="true"  data-tab="new">배차 등록</button>
+      <button type="button" role="tab" aria-selected="false" data-tab="list">배차 목록<span class="badge hidden" id="tabBadge">0</span></button>
+      <button type="button" role="tab" aria-selected="false" data-tab="set">설정</button>
+    </div>
+  </nav>
+
+  <!-- ══ 탭 1 : 배차 등록 ══ -->
+  <section id="tab-new">
+
+    <div class="card">
+      <h2>📥 예약 문자 붙여넣기</h2>
+      <p class="hint">고객이 보낸 예약 문자를 그대로 붙여넣으면 아래 배차 정보가 <b>자동으로 채워집니다.</b></p>
+      <div class="pastebox">
+        <textarea id="pasteArea" placeholder="[벤티365 예약 요청]&#10;· 서비스: 공항 픽업&#10;· 예약자 성함: 홍길동&#10;· 연락처: 010-1234-5678&#10;· 탑승 날짜 및 시간: 2026.10.09(금) 07:00&#10;· 출발지: 서울 영등포구&#10;· 도착지: 인천공항 T1"></textarea>
+      </div>
+      <div class="acts">
+        <button type="button" class="btn btn-blue" id="btnParse">자동 입력</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="step">1</span>탑승 정보</h2>
+      <p class="hint"><span style="color:#F04452">*</span> 표시는 필수 항목입니다.</p>
+
+      <div class="fld" id="f-when">
+        <label for="when">탑승 날짜 및 시간<span class="req">*</span></label>
+        <input type="datetime-local" id="when">
+      </div>
+
+      <div class="fld" id="f-name">
+        <label for="name">고객 성함<span class="req">*</span></label>
+        <input type="text" id="name" placeholder="예: 홍길동" maxlength="20">
+      </div>
+
+      <div class="fld" id="f-phone">
+        <label for="phone">고객 연락처<span class="req">*</span></label>
+        <input type="tel" id="phone" inputmode="numeric" placeholder="010-1234-5678" maxlength="13">
+      </div>
+
+      <div class="fld">
+        <label for="svc">서비스</label>
+        <select id="svc">
+          <option>공항 픽업</option>
+          <option>공항 드랍</option>
+          <option>골프 예약</option>
+          <option>지방 출장</option>
+          <option>기타</option>
+        </select>
+      </div>
+
+      <div class="fld" id="f-from">
+        <label for="from">출발지<span class="req">*</span></label>
+        <input type="text" id="from" placeholder="예: 서울 영등포구 여의도동" maxlength="60">
+      </div>
+
+      <div class="fld" id="f-to">
+        <label for="to">도착지<span class="req">*</span></label>
+        <input type="text" id="to" placeholder="예: 인천공항 제1여객터미널" maxlength="60">
+      </div>
+
+      <div class="row2">
+        <div class="fld">
+          <label for="pax">탑승 인원</label>
+          <input type="text" id="pax" placeholder="예: 4명" maxlength="10">
+        </div>
+        <div class="fld">
+          <label for="bag">수하물</label>
+          <input type="text" id="bag" placeholder="예: 캐리어2 골프백2" maxlength="30">
+        </div>
+      </div>
+
+      <div class="fld">
+        <label for="memo">특이사항</label>
+        <textarea id="memo" placeholder="예: 유아 카시트 필요 / 새벽 5시 픽업 / 짐이 많습니다" maxlength="200"></textarea>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="step">2</span>배차 정보</h2>
+      <p class="hint">차량·기사와 요금을 지정합니다.</p>
+
+      <div class="row2">
+        <div class="fld">
+          <label for="car">차량</label>
+          <input type="text" id="car" list="carList" placeholder="예: 카니발" maxlength="20">
+          <datalist id="carList"></datalist>
+        </div>
+        <div class="fld">
+          <label for="status">상태</label>
+          <select id="status">
+            <option>접수</option>
+            <option>확정</option>
+            <option>운행중</option>
+            <option>완료</option>
+            <option>취소</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="fld">
+        <label for="driverSel">기사 선택</label>
+        <select id="driverSel">
+          <option value="">— 직접 입력 —</option>
+        </select>
+      </div>
+
+      <div class="row2">
+        <div class="fld">
+          <label for="driver">기사 성함</label>
+          <input type="text" id="driver" placeholder="예: 김기사" maxlength="20">
+        </div>
+        <div class="fld">
+          <label for="driverPhone">기사 연락처</label>
+          <input type="tel" id="driverPhone" inputmode="numeric" placeholder="010-0000-0000" maxlength="13">
+        </div>
+      </div>
+
+      <div class="row2">
+        <div class="fld">
+          <label for="fare">운행 요금 (원)</label>
+          <input type="text" id="fare" inputmode="numeric" placeholder="예: 90000" maxlength="9">
+        </div>
+        <div class="fld">
+          <label for="deposit">예약금</label>
+          <select id="deposit">
+            <option value="0">미입금</option>
+            <option value="10000">10,000원 입금완료</option>
+            <option value="-1">전액 입금완료</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="step">3</span>확인 후 발송</h2>
+      <p class="hint">문자 앱이 열립니다. 전송 버튼만 누르면 됩니다.</p>
+
+      <div class="sum">
+        <h3>고객에게 보낼 안내문 <span id="custLen" style="color:#8B95A1;font-weight:600"></span></h3>
+        <pre id="prevCust">배차 정보를 입력하시면 여기에 표시됩니다.</pre>
+      </div>
+
+      <div class="sum" style="background:var(--blue-soft)">
+        <h3>기사에게 보낼 배차 지시문 <span id="drvLen" style="color:#8B95A1;font-weight:600"></span></h3>
+        <pre id="prevDrv">배차 정보를 입력하시면 여기에 표시됩니다.</pre>
+      </div>
+
+      <div class="acts">
+        <button type="button" class="btn btn-kakao" id="btnSave">💾 배차 목록에 저장</button>
+      </div>
+      <div class="acts2">
+        <button type="button" class="btn btn-dark btn-sm" id="btnSmsCust">✉️ 고객 안내 문자</button>
+        <button type="button" class="btn btn-dark btn-sm" id="btnSmsDrv">✉️ 기사 지시 문자</button>
+      </div>
+      <div class="acts2">
+        <button type="button" class="btn btn-ghost btn-sm" id="btnCopyCust">고객 안내문 복사</button>
+        <button type="button" class="btn btn-ghost btn-sm" id="btnCopyDrv">기사 지시문 복사</button>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm" id="btnClear" style="margin-top:8px">입력 내용 비우기</button>
+
+      <p class="warnline">
+        · 이 페이지는 <b>이 기기(브라우저)에만</b> 배차 내용을 저장합니다. 서버로 전송되지 않습니다.<br>
+        · 다른 기기와 공유하려면 <b>배차 목록 → 내보내기</b>로 백업해 옮겨 주십시오.<br>
+        · 저장 전에 <b>고객 안내 문자</b>를 먼저 보내도 됩니다.
+      </p>
+    </div>
+  </section>
+
+  <!-- ══ 탭 2 : 배차 목록 ══ -->
+  <section id="tab-list" class="hidden">
+
+    <div class="stats">
+      <div class="stat b"><div class="n" id="stToday">0</div><div class="k">오늘</div></div>
+      <div class="stat o"><div class="n" id="stWait">0</div><div class="k">배차 대기</div></div>
+      <div class="stat g"><div class="n" id="stDone">0</div><div class="k">완료</div></div>
+      <div class="stat"><div class="n" id="stFare">0</div><div class="k">요금 합계(만원)</div></div>
+    </div>
+
+    <div class="chips">
+      <button type="button" data-filter="upcoming" aria-pressed="true">예정</button>
+      <button type="button" data-filter="today" aria-pressed="false">오늘</button>
+      <button type="button" data-filter="open" aria-pressed="false">진행중</button>
+      <button type="button" data-filter="done" aria-pressed="false">완료</button>
+      <button type="button" data-filter="all" aria-pressed="false">전체</button>
+    </div>
+
+    <div id="listBox"></div>
+
+    <div class="card">
+      <h2>🗂 백업 · 내보내기</h2>
+      <p class="hint">기기를 바꾸거나 자료를 남길 때 사용합니다.</p>
+      <div class="acts2">
+        <button type="button" class="btn btn-ghost btn-sm" id="btnCsv">엑셀(CSV) 내보내기</button>
+        <button type="button" class="btn btn-ghost btn-sm" id="btnJson">JSON 백업</button>
+      </div>
+      <div class="acts2">
+        <button type="button" class="btn btn-ghost btn-sm" id="btnRestoreGo">JSON 복원</button>
+        <button type="button" class="btn btn-ghost btn-sm" id="btnCopyAll">전체 텍스트 복사</button>
+      </div>
+      <input type="file" id="restoreFile" accept="application/json,.json" class="hidden">
+      <p class="warnline">※ CSV 는 엑셀에서 바로 열립니다(UTF-8). 복원은 <b>기존 목록에 추가</b>됩니다.</p>
+    </div>
+  </section>
+
+  <!-- ══ 탭 3 : 설정 ══ -->
+  <section id="tab-set" class="hidden">
+
+    <div class="card">
+      <h2>🧑‍✈️ 기사 명부</h2>
+      <p class="hint">등록해 두면 배차 시 선택만 하면 됩니다.</p>
+      <div id="drvList"></div>
+      <div class="fld" style="margin-top:12px">
+        <label for="dName">기사 성함</label>
+        <input type="text" id="dName" placeholder="예: 김기사" maxlength="20">
+      </div>
+      <div class="row2">
+        <div class="fld">
+          <label for="dPhone">연락처</label>
+          <input type="tel" id="dPhone" inputmode="numeric" placeholder="010-0000-0000" maxlength="13">
+        </div>
+        <div class="fld">
+          <label for="dCar">차량</label>
+          <input type="text" id="dCar" list="carList" placeholder="예: 카니발" maxlength="20">
+        </div>
+      </div>
+      <button type="button" class="btn btn-dark btn-sm" id="btnAddDrv">기사 추가</button>
+    </div>
+
+    <div class="card">
+      <h2>🚐 차량 목록</h2>
+      <p class="hint">쉼표로 구분해 한 줄로 입력합니다.</p>
+      <div class="fld">
+        <input type="text" id="carEdit" placeholder="카니발, 스타리아, 벤츠 V클래스">
+      </div>
+      <button type="button" class="btn btn-dark btn-sm" id="btnSaveCars">차량 목록 저장</button>
+    </div>
+
+    <div class="card">
+      <h2>🔒 비밀번호 변경</h2>
+      <p class="hint">이 기기에만 적용됩니다. 잊으면 기본값으로 초기화할 수 있습니다.</p>
+      <div class="fld">
+        <label for="pwOld">현재 비밀번호</label>
+        <input type="password" id="pwOld" inputmode="numeric" maxlength="32" autocomplete="current-password">
+      </div>
+      <div class="fld">
+        <label for="pwNew">새 비밀번호 (4자 이상)</label>
+        <input type="password" id="pwNew" inputmode="numeric" maxlength="32" autocomplete="new-password">
+      </div>
+      <button type="button" class="btn btn-dark btn-sm" id="btnPwChange">비밀번호 변경</button>
+      <button type="button" class="btn btn-danger btn-sm" id="btnPwReset" style="margin-top:8px">기본 비밀번호로 초기화</button>
+      <p class="warnline">※ 기본 비밀번호는 <b>365365</b> 입니다. 초기화해도 배차 목록은 지워지지 않습니다.</p>
+    </div>
+
+    <div class="card">
+      <h2>⚠️ 데이터 관리</h2>
+      <p class="hint">저장된 배차 목록을 이 기기에서 삭제합니다.</p>
+      <button type="button" class="btn btn-danger btn-sm" id="btnWipe">배차 목록 전체 삭제</button>
+      <p class="warnline">※ 삭제 전에 <b>배차 목록 → JSON 백업</b>을 받아 두십시오. 되돌릴 수 없습니다.</p>
+    </div>
+
+    <footer>
+      벤티 365 관리자 · 문의 010-8622-0611<br>
+      <span id="footNote"></span>
+    </footer>
+  </section>
+
+</main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ══════ 설정 ══════ */
+  var CFG = {
+    phone: "01086220611",
+    phoneText: "010-8622-0611",
+    hours: "평일 13:00 ~ 익일 새벽 02:00",
+    baseDeposit: 10000
+  };
+
+  // 기본 비밀번호 = 365365 (SHA-256). 설정 탭에서 이 기기만 변경할 수 있다.
+  var DEFAULT_SHA = "ffdfe413f4bffa55dade61d0936a864fb9f6cc567e2b8dacabe9818b130ed8f1";
+  var OB_PASS = "MzY1MzY1";                          // base64("365365") — 암호화 API 없는 환경 폴백
+
+  var K_PASS  = "venti365_admin_pass_v1";
+  var K_EXP   = "venti365_admin_exp_v1";
+  var K_LIST  = "venti365_dispatch_v1";
+  var K_DRV   = "venti365_drivers_v1";
+  var K_CAR   = "venti365_cars_v1";
+
+  var DEF_CARS  = ["카니발", "스타리아", "벤츠 V클래스", "쏠라티"];
+  var STATUSES  = ["접수", "확정", "운행중", "완료", "취소"];
+  var KEEP_DAYS = 30;
+
+  var $ = function(id){ return document.getElementById(id); };
+
+  /* ══════ 저장소 ══════ */
+  function lsGet(k, dflt){
+    try { var v = localStorage.getItem(k); return v === null ? dflt : JSON.parse(v); }
+    catch(e){ return dflt; }
+  }
+  function lsSet(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+  function ssGet(k){ try { return sessionStorage.getItem(k); } catch(e){ return null; } }
+  function ssSet(k, v){ try { sessionStorage.setItem(k, v); } catch(e){} }
+  function ssDel(k){ try { sessionStorage.removeItem(k); } catch(e){} }
+
+  /* ══════ 유틸 ══════ */
+  function pad(n){ return (n < 10 ? "0" : "") + n; }
+  function pad3(n){ n = String(n); while (n.length < 3) n = "0" + n; return n; }
+
+  function fmtPhone(v){
+    var d = String(v || "").replace(/\D/g, "").slice(0, 11);
+    if (d.length < 4) return d;
+    if (d.length < 8) return d.slice(0,3) + "-" + d.slice(3);
+    if (d.length < 11) return d.slice(0,3) + "-" + d.slice(3, d.length - 4) + "-" + d.slice(d.length - 4);
+    return d.slice(0,3) + "-" + d.slice(3,7) + "-" + d.slice(7);
+  }
+  function phoneDigits(v){ return String(v || "").replace(/\D/g, ""); }
+
+  var WD = ["일","월","화","수","목","금","토"];
+  function fmtWhen(v){
+    if (!v) return "";
+    var p = String(v).split("T");
+    if (p.length !== 2) return v;
+    var dmy = p[0].split("-"), hm = p[1].split(":");
+    var dt = new Date(+dmy[0], +dmy[1]-1, +dmy[2]);
+    var day = isNaN(dt.getTime()) ? "" : "(" + WD[dt.getDay()] + ")";
+    return dmy[0] + "." + dmy[1] + "." + dmy[2] + day + " " + hm[0] + ":" + hm[1];
+  }
+  function fmtFare(n){
+    n = Number(n);
+    if (!n) return "미정";
+    return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "원";
+  }
+  function ymd(v){
+    var p = String(v || "").split("T")[0].split("-");
+    return p.join("");
+  }
+  function esc(s){
+    return String(s === undefined || s === null ? "" : s)
+      .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+      .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+  }
+  function sameDay(a, b){
+    return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  }
+  function whenDate(v){ var t = new Date(v).getTime(); return isNaN(t) ? null : new Date(t); }
+  function isIOS(){
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+           (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  }
+
+  /* ══════ 비밀번호 ══════ */
+  function sha256hex(s){
+    if (window.crypto && window.crypto.subtle && window.crypto.subtle.digest) {
+      try {
+        var data = new TextEncoder().encode(s);
+        return window.crypto.subtle.digest("SHA-256", data).then(function(buf){
+          var b = new Uint8Array(buf), out = "";
+          for (var i = 0; i < b.length; i++) out += ("0" + b[i].toString(16)).slice(-2);
+          return out;
+        });
+      } catch(e){}
+    }
+    return Promise.reject(new Error("no-subtle"));
+  }
+  function currentHash(){
+    try { return localStorage.getItem(K_PASS) || DEFAULT_SHA; } catch(e){ return DEFAULT_SHA; }
+  }
+  function checkPass(pass){
+    return sha256hex(pass).then(function(h){ return h === currentHash(); })
+      .catch(function(){
+        var plain = "";
+        try { plain = atob(OB_PASS); } catch(e){ plain = ""; }
+        return currentHash() === DEFAULT_SHA && pass === plain;
+      });
+  }
+  function unlocked(){
+    // 브라우저를 닫으면 잠긴다. '30일 유지'를 켠 기기만 localStorage 만료를 본다.
+    if (ssGet("v365adm") === "1") return true;
+    var exp = lsGet(K_EXP, 0);
+    return !!exp && Number(exp) > Date.now();
+  }
+
+  /* ══════ 문자·클립보드 ══════ */
+  function copySync(t){
+    try {
+      var ta = document.createElement("textarea");
+      ta.value = t;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed"; ta.style.top = "0"; ta.style.left = "0";
+      ta.style.width = "1px"; ta.style.height = "1px"; ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.focus(); ta.select();
+      try { ta.setSelectionRange(0, t.length); } catch(e){}
+      var ok = false;
+      try { ok = document.execCommand("copy"); } catch(e){ ok = false; }
+      document.body.removeChild(ta);
+      return ok;
+    } catch(err){ return false; }
+  }
+  function copyText(t){
+    if (copySync(t)) return Promise.resolve(true);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(t).then(function(){ return true; });
+    }
+    return Promise.reject(new Error("copy failed"));
+  }
+  function sendSms(to, body){
+    var num = phoneDigits(to);
+    if (num.length < 9) { toast("연락처를 먼저 입력해 주십시오."); return false; }
+    var href = "sms:" + num + (isIOS() ? "&body=" : "?body=") + encodeURIComponent(body);
+    window.location.href = href;
+    return true;
+  }
+  function download(name, text, mime){
+    try {
+      var blob = new Blob([text], {type: mime || "text/plain;charset=utf-8"});
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url; a.download = name;
+      document.body.appendChild(a); a.click();
+      setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 400);
+      return true;
+    } catch(e){ return false; }
+  }
+
+  var toastTimer = null;
+  function toast(msg){
+    var t = $("toast");
+    t.textContent = msg;
+    t.classList.add("on");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ t.classList.remove("on"); }, 2600);
+  }
+
+  /* ══════ 예약 문자 파서 ══════ */
+  var KEYMAP = [
+    { re: /서비스/,                    k: "svc"  },
+    { re: /(예약자\s*)?(성함|이름)/,    k: "name" },
+    { re: /(연락처|전화|휴대폰|핸드폰)/, k: "phone"},
+    { re: /(탑승\s*)?(날짜|일시|시간)|출발\s*일시/, k: "when" },
+    { re: /출발지|출발\s*장소|픽업지/,  k: "from" },
+    { re: /도착지|도착\s*장소|드랍지/,  k: "to"   },
+    { re: /(탑승\s*)?인원|승객/,        k: "pax"  },
+    { re: /수하물|짐|캐리어|골프백/,    k: "bag"  },
+    { re: /(요청|특이)\s*사항|메모/,    k: "memo" }
+  ];
+
+  function parseWhen(s){
+    // 2026.10.09(금) 07:00 / 2026-10-09 07:00 / 2026/10/09 07:00 / 10.09 07:00
+    var m = String(s).match(/(\d{4})[.\-\/]\s*(\d{1,2})[.\-\/]\s*(\d{1,2})[^\d]*?(\d{1,2})\s*:\s*(\d{2})/);
+    if (m) {
+      return m[1] + "-" + pad(+m[2]) + "-" + pad(+m[3]) + "T" + pad(+m[4]) + ":" + m[5];
+    }
+    m = String(s).match(/(\d{1,2})[.\-\/]\s*(\d{1,2})[^\d]*?(\d{1,2})\s*:\s*(\d{2})/);
+    if (m) {
+      var y = new Date().getFullYear();
+      return y + "-" + pad(+m[1]) + "-" + pad(+m[2]) + "T" + pad(+m[3]) + ":" + m[4];
+    }
+    return "";
+  }
+
+  function parseReservation(text){
+    var out = {}, unknown = [];
+    var lines = String(text || "").split(/\r?\n/);
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i].replace(/^[\s·•\-*∙]+/, "").trim();
+      if (!line) continue;
+      var idx = line.indexOf(":");
+      if (idx < 0) idx = line.indexOf("：");
+      if (idx < 0) continue;
+      var lab = line.slice(0, idx).trim();
+      var valv = line.slice(idx + 1).trim();
+      if (!valv) continue;
+      var hit = null;
+      for (var j = 0; j < KEYMAP.length; j++) {
+        if (KEYMAP[j].re.test(lab)) { hit = KEYMAP[j].k; break; }
+      }
+      if (!hit) { unknown.push(lab); continue; }
+      if (hit === "when") {
+        var w = parseWhen(valv);
+        if (w) out.when = w;
+      } else if (hit === "phone") {
+        out.phone = fmtPhone(valv);
+      } else {
+        out[hit] = valv;
+      }
+    }
+    return { data: out, unknown: unknown };
+  }
+
+  /* ══════ 배차 메시지 생성 ══════ */
+  function depositInfo(d){
+    var fare = Number(d.fare) || 0;
+    var dep  = Number(d.deposit);
+    if (dep === -1) return { label: "전액 입금완료", balance: 0 };
+    if (dep === 0)  return { label: "미입금",        balance: fare };
+    return { label: fmtFare(dep) + " 입금완료", balance: Math.max(fare - dep, 0) };
+  }
+
+  function buildCustomer(d){
+    var dp = depositInfo(d);
+    var L = [];
+    L.push("[벤티365 배차 확정 안내]");
+    L.push("");
+    L.push((d.name || "고객") + " 고객님, 예약이 확정되었습니다.");
+    L.push("");
+    if (d.id)      L.push("· 접수번호: " + d.id);
+    L.push("· 탑승 일시: " + fmtWhen(d.when));
+    L.push("· 서비스: " + (d.svc || "-"));
+    L.push("· 구간: " + (d.from || "-") + " → " + (d.to || "-"));
+    if (d.car)     L.push("· 차량: " + d.car);
+    if (d.driver)  L.push("· 기사: " + d.driver + (d.driverPhone ? " " + fmtPhone(d.driverPhone) : ""));
+    if (Number(d.fare)) L.push("· 운행 요금: " + fmtFare(d.fare));
+    L.push("· 예약금: " + dp.label);
+    if (Number(d.fare)) L.push("· 잔금: " + (dp.balance ? fmtFare(dp.balance) + " (현장 결제)" : "없음"));
+    L.push("");
+    L.push("이용 당일 출발 전에 기사가 연락드립니다.");
+    L.push("문의: " + CFG.phoneText + " (" + CFG.hours + ")");
+    L.push("벤티365 — 카카오 T 벤티 예약 접수");
+    return L.join("\n");
+  }
+
+  function buildDriver(d){
+    var dp = depositInfo(d);
+    var L = [];
+    L.push("[벤티365 배차 지시]");
+    if (d.id)      L.push("· 접수번호: " + d.id);
+    L.push("· 탑승 일시: " + fmtWhen(d.when));
+    L.push("· 서비스: " + (d.svc || "-"));
+    L.push("· 고객: " + (d.name || "-") + " " + fmtPhone(d.phone));
+    L.push("· 구간: " + (d.from || "-") + " → " + (d.to || "-"));
+    L.push("· 인원/수하물: " + (d.pax || "미입력") + " / " + (d.bag || "미입력"));
+    if (d.car)     L.push("· 차량: " + d.car);
+    L.push("· 요금: " + (Number(d.fare) ? fmtFare(d.fare) : "미정") + " / 예약금 " + dp.label);
+    if (d.memo)    L.push("· 특이사항: " + d.memo);
+    L.push("");
+    L.push("출발 전 고객님께 연락 부탁드립니다.");
+    return L.join("\n");
+  }
+
+  /* ══════ 폼 수집 / 검증 ══════ */
+  var FIELDS = ["when","name","phone","svc","from","to","pax","bag","memo",
+                "car","driver","driverPhone","fare","deposit","status"];
+
+  function val(k){ var el = $(k); return el ? String(el.value || "").trim() : ""; }
+
+  function collect(){
+    return {
+      when: val("when"), name: val("name"), phone: val("phone"), svc: val("svc"),
+      from: val("from"), to: val("to"), pax: val("pax"), bag: val("bag"), memo: val("memo"),
+      car: val("car"), driver: val("driver"), driverPhone: val("driverPhone"),
+      fare: Number(phoneDigits(val("fare"))) || 0,
+      deposit: Number(val("deposit")), status: val("status")
+    };
+  }
+
+  function errors(d){
+    var e = {};
+    if (!d.name || d.name.length < 2) e.name = true;
+    if (phoneDigits(d.phone).length !== 11) e.phone = true;
+    var okWhen = false;
+    if (d.when) { var t = new Date(d.when).getTime(); okWhen = !isNaN(t); }
+    if (!okWhen) e.when = true;
+    if (!d.from || d.from.length < 2) e.from = true;
+    if (!d.to || d.to.length < 2) e.to = true;
+    return e;
+  }
+  function markErrors(e){
+    ["when","name","phone","from","to"].forEach(function(k){
+      var box = $("f-" + k);
+      if (box) box.classList.toggle("bad", !!e[k]);
+    });
+  }
+
+  var editingId = null;
+
+  function update(){
+    var d = collect();
+    var filled = d.name || d.phone || d.when || d.from || d.to;
+    var cm = filled ? buildCustomer(d) : "배차 정보를 입력하시면 여기에 표시됩니다.";
+    var dm = filled ? buildDriver(d)   : "배차 정보를 입력하시면 여기에 표시됩니다.";
+    $("prevCust").textContent = cm;
+    $("prevDrv").textContent  = dm;
+    $("custLen").textContent = filled ? cm.length + "자" : "";
+    $("drvLen").textContent  = filled ? dm.length + "자" : "";
+
+    var e = errors(d);
+    ["when","name","phone","from","to"].forEach(function(k){
+      var box = $("f-" + k);
+      if (box && box.classList.contains("bad") && !e[k]) box.classList.remove("bad");
+    });
+  }
+
+  function guard(){
+    var d = collect(), e = errors(d);
+    markErrors(e);
+    var keys = Object.keys(e);
+    if (keys.length) {
+      var box = $("f-" + keys[0]);
+      if (box) {
+        box.scrollIntoView({behavior:"smooth", block:"center"});
+        var f = box.querySelector("input");
+        if (f) setTimeout(function(){ try { f.focus(); } catch(err){} }, 260);
+      }
+      toast("입력하지 않았거나 형식이 맞지 않는 항목이 있습니다.");
+      return null;
+    }
+    return d;
+  }
+
+  function nextId(whenVal){
+    var pfx = "V" + ymd(whenVal);
+    var list = getList(), mx = 0;
+    for (var i = 0; i < list.length; i++) {
+      var id = list[i].id || "";
+      if (id.indexOf(pfx) === 0) {
+        var n = parseInt(id.slice(pfx.length + 1), 10);
+        if (!isNaN(n) && n > mx) mx = n;
+      }
+    }
+    return pfx + "-" + pad3(mx + 1);
+  }
+
+  /* ══════ 목록 저장소 ══════ */
+  function getList(){
+    var l = lsGet(K_LIST, []);
+    return Object.prototype.toString.call(l) === "[object Array]" ? l : [];
+  }
+  function setList(l){ lsSet(K_LIST, l); }
+
+  function saveDispatch(){
+    var d = guard();
+    if (!d) return;
+    var list = getList();
+    var now = new Date().toISOString();
+
+    if (editingId) {
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].id === editingId) {
+          var keep = list[i].id;
+          d.id = keep; d.createdAt = list[i].createdAt; d.updatedAt = now;
+          list[i] = d;
+          break;
+        }
+      }
+      toast("배차 정보를 수정했습니다. (" + editingId + ")");
+      editingId = null;
+      $("btnSave").textContent = "💾 배차 목록에 저장";
+    } else {
+      d.id = nextId(d.when);
+      d.createdAt = now; d.updatedAt = now;
+      list.push(d);
+      toast("저장했습니다. 접수번호 " + d.id);
+    }
+    setList(list);
+    renderList(); renderBadge();
+  }
+
+  function loadToForm(rec){
+    FIELDS.forEach(function(k){
+      if (k === "deposit") { $(k).value = String(rec.deposit === undefined ? 0 : rec.deposit); return; }
+      $(k).value = rec[k] === undefined || rec[k] === null ? "" : String(rec[k]);
+    });
+    editingId = rec.id;
+    $("btnSave").textContent = "✏️ 수정 저장 (" + rec.id + ")";
+    switchTab("new");
+    update();
+    window.scrollTo({top:0, behavior:"smooth"});
+    toast("불러왔습니다. 수정 후 [수정 저장]을 눌러주십시오.");
+  }
+
+  function setStatus(id, st){
+    var list = getList();
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].id === id) { list[i].status = st; list[i].updatedAt = new Date().toISOString(); break; }
+    }
+    setList(list); renderList(); renderBadge();
+    toast(id + " → " + st);
+  }
+
+  function delOne(id){
+    if (!window.confirm("접수번호 " + id + " 배차를 삭제할까요?\n되돌릴 수 없습니다.")) return;
+    var list = getList().filter(function(r){ return r.id !== id; });
+    setList(list); renderList(); renderBadge();
+    toast("삭제했습니다.");
+  }
+
+  function clearForm(){
+    FIELDS.forEach(function(k){
+      if (k === "status") { $(k).value = "접수"; return; }
+      if (k === "deposit"){ $(k).value = "0";    return; }
+      if (k === "svc")    { $(k).value = "공항 픽업"; return; }
+      $(k).value = "";
+    });
+    editingId = null;
+    $("btnSave").textContent = "💾 배차 목록에 저장";
+    update();
+  }
+
+  /* ══════ 렌더 ══════ */
+  var FILTER = "upcoming";
+
+  function inFilter(r){
+    var wd = whenDate(r.when);
+    var now = new Date();
+    var st = r.status || "접수";
+    if (FILTER === "all")  return true;
+    if (FILTER === "today") return !!wd && sameDay(wd, now);
+    if (FILTER === "done")  return st === "완료" || st === "취소";
+    if (FILTER === "open")  return st === "접수" || st === "확정" || st === "운행중";
+    // upcoming: 아직 지나지 않은 미완료 배차
+    return !!wd && wd.getTime() > now.getTime() - 2 * 3600000 && st !== "완료" && st !== "취소";
+  }
+
+  function sorted(){
+    return getList().slice().sort(function(a, b){
+      var ta = whenDate(a.when), tb = whenDate(b.when);
+      return (ta ? ta.getTime() : 0) - (tb ? tb.getTime() : 0);
+    });
+  }
+
+  function renderBadge(){
+    var n = getList().filter(function(r){
+      var st = r.status || "접수";
+      return st === "접수" || st === "확정";
+    }).length;
+    var b = $("tabBadge");
+    b.textContent = n;
+    b.classList.toggle("hidden", n === 0);
+  }
+
+  function renderStats(){
+    var list = getList(), now = new Date();
+    var today = 0, wait = 0, done = 0, fare = 0, shown = 0;
+    for (var i = 0; i < list.length; i++) {
+      var r = list[i], st = r.status || "접수";
+      var wd = whenDate(r.when);
+      if (wd && sameDay(wd, now)) today++;
+      if (st === "접수" || st === "확정") wait++;
+      if (st === "완료") done++;
+      if (st !== "취소") fare += Number(r.fare) || 0;
+      if (inFilter(r)) shown++;
+    }
+    $("stToday").textContent = today;
+    $("stWait").textContent  = wait;
+    $("stDone").textContent  = done;
+    $("stFare").textContent  = Math.round(fare / 10000);
+    return shown;
+  }
+
+  function cardHtml(r){
+    var st = r.status || "접수";
+    var dp = depositInfo(r);
+    var phone = fmtPhone(r.phone);
+    var ops = ['<button type="button" class="ops-open pri" data-act="sms-cust" data-id="' + esc(r.id) + '">고객 문자</button>',
+               '<button type="button" data-act="sms-drv" data-id="' + esc(r.id) + '">기사 문자</button>',
+               '<button type="button" data-act="edit" data-id="' + esc(r.id) + '">수정</button>',
+               '<button type="button" data-act="more" data-id="' + esc(r.id) + '">상태·삭제</button>'];
+
+    var L = [];
+    L.push('<div class="item">');
+    L.push('  <div class="hd">');
+    L.push('    <div class="hh">');
+    L.push('      <div class="t">' + esc(fmtWhen(r.when)) + '</div>');
+    L.push('      <div class="dt">' + esc(r.id) + ' · ' + esc(r.svc || "-") + '</div>');
+    L.push('    </div>');
+    L.push('    <span class="st st-' + esc(st) + '">' + esc(st) + '</span>');
+    L.push('  </div>');
+    L.push('  <div class="nm">' + esc(r.name || "-") + ' · <a href="tel:' + esc(phoneDigits(r.phone)) + '">' + esc(phone) + '</a></div>');
+    L.push('  <div class="rt">' + esc(r.from || "-") + ' → ' + esc(r.to || "-") + '</div>');
+    L.push('  <div class="meta">');
+    if (r.pax)    L.push('<span class="pill">인원 ' + esc(r.pax) + '</span>');
+    if (r.bag)    L.push('<span class="pill">수하물 ' + esc(r.bag) + '</span>');
+    if (r.car)    L.push('<span class="pill">' + esc(r.car) + '</span>');
+    if (r.driver) L.push('<span class="pill">기사 ' + esc(r.driver) + '</span>');
+    if (Number(r.fare)) L.push('<span class="pill">' + esc(dp.label) + '</span>');
+    L.push('  </div>');
+    if (r.memo) L.push('  <div class="memo">📌 ' + esc(r.memo) + '</div>');
+    if (Number(r.fare)) {
+      L.push('  <div class="fare">' + esc(fmtFare(r.fare)) +
+             (dp.balance ? ' <em>· 잔금 ' + esc(fmtFare(dp.balance)) + '</em>' : ' <em>· 잔금 없음</em>') + '</div>');
+    }
+    L.push('  <div class="ops">' + ops.join("") + '</div>');
+    L.push('</div>');
+    return L.join("\n");
+  }
+
+  function renderList(){
+    var shown = renderStats();
+    var rows = sorted().filter(inFilter);
+    var box = $("listBox");
+
+    if (!getList().length) {
+      box.innerHTML = '<div class="empty">아직 등록된 배차가 없습니다.<br><b>배차 등록</b> 탭에서 첫 배차를 입력해 보십시오.</div>';
+      return;
+    }
+    if (!rows.length) {
+      box.innerHTML = '<div class="empty">이 조건에 해당하는 배차가 없습니다.<br>위 필터를 바꿔 보십시오.</div>';
+      return;
+    }
+    var html = ['<div class="card" style="padding:13px 15px"><h2 style="font-size:14px">📋 ' + shown + '건 표시</h2></div>'];
+    for (var i = 0; i < rows.length; i++) html.push(cardHtml(rows[i]));
+    box.innerHTML = html.join("\n");
+  }
+
+  function renderDrivers(){
+    var list = lsGet(K_DRV, []);
+    if (Object.prototype.toString.call(list) !== "[object Array]") list = [];
+    var box = $("drvList");
+    if (!list.length) {
+      box.innerHTML = '<div class="empty" style="padding:16px">등록된 기사가 없습니다.</div>';
+    } else {
+      box.innerHTML = list.map(function(d, i){
+        return '<div class="drv"><div class="i"><div class="a">' + esc(d.name) + ' <span style="color:#8B95A1;font-weight:600">' + esc(d.car || "") + '</span></div>' +
+               '<div class="b">' + esc(fmtPhone(d.phone)) + '</div></div>' +
+               '<button type="button" data-ddel="' + i + '">삭제</button></div>';
+      }).join("");
+    }
+    var sel = $("driverSel");
+    var cur = sel.value;
+    sel.innerHTML = '<option value="">— 직접 입력 —</option>' + list.map(function(d, i){
+      return '<option value="' + i + '">' + esc(d.name) + (d.car ? " · " + esc(d.car) : "") + '</option>';
+    }).join("");
+    sel.value = cur;
+
+    var cars = lsGet(K_CAR, DEF_CARS);
+    if (Object.prototype.toString.call(cars) !== "[object Array]" || !cars.length) cars = DEF_CARS;
+    $("carList").innerHTML = cars.map(function(c){ return '<option value="' + esc(c) + '"></option>'; }).join("");
+    $("carEdit").value = cars.join(", ");
+  }
+
+  /* ══════ 탭 ══════ */
+  function switchTab(name){
+    ["new","list","set"].forEach(function(n){
+      var sec = $("tab-" + n);
+      if (sec) sec.classList.toggle("hidden", n !== name);
+    });
+    var bs = document.querySelectorAll(".tabs button");
+    for (var i = 0; i < bs.length; i++) {
+      bs[i].setAttribute("aria-selected", String(bs[i].dataset.tab === name));
+    }
+    if (name === "list") renderList();
+    if (name === "set")  renderDrivers();
+    if (name === "new")  update();
+  }
+
+  /* ══════ 이벤트 ══════ */
+  // 입력 → 미리보기
+  FIELDS.forEach(function(k){
+    var el = $(k);
+    if (!el) return;
+    el.addEventListener("input", update);
+    el.addEventListener("change", update);
+  });
+  $("phone").addEventListener("input", function(){
+    var el = $("phone");
+    var atEnd = el.selectionStart === el.value.length;
+    el.value = fmtPhone(el.value);
+    if (atEnd) { try { el.setSelectionRange(el.value.length, el.value.length); } catch(e){} }
+    update();
+  });
+  $("driverPhone").addEventListener("input", function(){
+    var el = $("driverPhone");
+    var atEnd = el.selectionStart === el.value.length;
+    el.value = fmtPhone(el.value);
+    if (atEnd) { try { el.setSelectionRange(el.value.length, el.value.length); } catch(e){} }
+    update();
+  });
+  $("driverSel").addEventListener("change", function(){
+    var idx = $("driverSel").value;
+    var list = lsGet(K_DRV, []);
+    if (idx === "" || !list[idx]) return;
+    $("driver").value = list[idx].name || "";
+    $("driverPhone").value = fmtPhone(list[idx].phone || "");
+    if (list[idx].car && !val("car")) $("car").value = list[idx].car;
+    update();
+    toast("기사 정보를 채웠습니다.");
+  });
+
+  // 탭
+  var tabBtns = document.querySelectorAll(".tabs button");
+  for (var ti = 0; ti < tabBtns.length; ti++) {
+    tabBtns[ti].addEventListener("click", function(){ switchTab(this.dataset.tab); });
+  }
+
+  // 파서
+  $("btnParse").addEventListener("click", function(){
+    var res = parseReservation($("pasteArea").value);
+    var got = Object.keys(res.data);
+    if (!got.length) { toast("인식된 항목이 없습니다. 예약 문자를 그대로 붙여넣어 주십시오."); return; }
+    got.forEach(function(k){
+      if (k === "phone") $("phone").value = res.data.phone;
+      else if ($(k)) $(k).value = res.data[k];
+    });
+    update();
+    var names = {
+      when:"탑승일시", name:"성함", phone:"연락처", svc:"서비스", from:"출발지",
+      to:"도착지", pax:"인원", bag:"수하물", memo:"특이사항"
+    };
+    toast("자동 입력 완료 — " + got.map(function(k){ return names[k] || k; }).join(", "));
+  });
+
+  // 발송·복사
+  $("btnSmsCust").addEventListener("click", function(){
+    var d = guard(); if (!d) return;
+    if (sendSms(d.phone, buildCustomer(d))) toast("문자 앱이 열립니다. 전송 버튼만 누르십시오.");
+  });
+  $("btnSmsDrv").addEventListener("click", function(){
+    var d = guard(); if (!d) return;
+    if (!d.driverPhone) { toast("기사 연락처를 먼저 입력해 주십시오."); return; }
+    if (sendSms(d.driverPhone, buildDriver(d))) toast("문자 앱이 열립니다. 전송 버튼만 누르십시오.");
+  });
+  $("btnCopyCust").addEventListener("click", function(){
+    var d = collect();
+    copyText(buildCustomer(d)).then(function(){ toast("고객 안내문을 복사했습니다."); })
+      .catch(function(){ toast("복사에 실패했습니다. 미리보기를 길게 눌러 복사해 주십시오."); });
+  });
+  $("btnCopyDrv").addEventListener("click", function(){
+    var d = collect();
+    copyText(buildDriver(d)).then(function(){ toast("기사 지시문을 복사했습니다."); })
+      .catch(function(){ toast("복사에 실패했습니다. 미리보기를 길게 눌러 복사해 주십시오."); });
+  });
+
+  $("btnSave").addEventListener("click", saveDispatch);
+  $("btnClear").addEventListener("click", function(){ clearForm(); toast("입력 내용을 비웠습니다."); });
+
+  // 필터
+  var chipBtns = document.querySelectorAll(".chips button");
+  for (var ci = 0; ci < chipBtns.length; ci++) {
+    chipBtns[ci].addEventListener("click", function(){
+      FILTER = this.dataset.filter;
+      for (var k = 0; k < chipBtns.length; k++) {
+        chipBtns[k].setAttribute("aria-pressed", String(chipBtns[k] === this));
+      }
+      renderList();
+    });
+  }
+
+  // 목록 조작 (위임)
+  $("listBox").addEventListener("click", function(ev){
+    var btn = ev.target.closest ? ev.target.closest("button[data-act]") : null;
+    if (!btn) return;
+    var id = btn.dataset.id, act = btn.dataset.act;
+    var rec = null, list = getList();
+    for (var i = 0; i < list.length; i++) if (list[i].id === id) rec = list[i];
+    if (!rec) return;
+
+    if (act === "sms-cust") {
+      if (sendSms(rec.phone, buildCustomer(rec))) toast("고객 안내 문자 — " + id);
+    } else if (act === "sms-drv") {
+      if (!rec.driverPhone) { toast("기사 연락처가 없습니다. [수정]에서 입력해 주십시오."); return; }
+      if (sendSms(rec.driverPhone, buildDriver(rec))) toast("기사 지시 문자 — " + id);
+    } else if (act === "edit") {
+      loadToForm(rec);
+    } else if (act === "more") {
+      var msg = "[" + id + "] " + rec.name + " · 현재 상태: " + (rec.status || "접수") + "\n\n";
+      msg += "바꿀 상태를 입력해 주십시오.\n" + STATUSES.join(" / ") + "\n\n(빈칸으로 두고 확인하면 삭제 메뉴가 나옵니다)";
+      var ans = window.prompt(msg, rec.status || "접수");
+      if (ans === null) return;
+      ans = ans.trim();
+      if (!ans) {
+        delOne(id);
+        return;
+      }
+      if (STATUSES.indexOf(ans) < 0) { toast("상태는 " + STATUSES.join(" / ") + " 중 하나여야 합니다."); return; }
+      setStatus(id, ans);
+    }
+  });
+
+  // 내보내기
+  function csvCell(v){ return '"' + String(v === undefined || v === null ? "" : v).replace(/"/g, '""') + '"'; }
+  $("btnCsv").addEventListener("click", function(){
+    var rows = sorted();
+    if (!rows.length) { toast("내보낼 배차가 없습니다."); return; }
+    var head = ["접수번호","탑승일시","상태","서비스","고객","연락처","출발지","도착지","인원","수하물","차량","기사","기사연락처","요금","예약금","잔금","특이사항"];
+    var out = [head.map(csvCell).join(",")];
+    rows.forEach(function(r){
+      var dp = depositInfo(r);
+      out.push([
+        r.id, fmtWhen(r.when), r.status || "접수", r.svc, r.name, fmtPhone(r.phone),
+        r.from, r.to, r.pax, r.bag, r.car, r.driver, fmtPhone(r.driverPhone),
+        Number(r.fare) || 0, dp.label, dp.balance, r.memo
+      ].map(csvCell).join(","));
+    });
+    var name = "벤티365_배차_" + ymd(new Date().toISOString()) + ".csv";
+    if (download(name, "\ufeff" + out.join("\r\n"), "text/csv;charset=utf-8")) toast("CSV 내보내기 완료 — " + name);
+    else toast("내보내기에 실패했습니다.");
+  });
+
+  $("btnJson").addEventListener("click", function(){
+    var payload = {
+      type: "venti365-dispatch-backup",
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      count: getList().length,
+      dispatch: getList(),
+      drivers: lsGet(K_DRV, []),
+      cars: lsGet(K_CAR, DEF_CARS)
+    };
+    var name = "벤티365_배차백업_" + ymd(new Date().toISOString()) + ".json";
+    if (download(name, JSON.stringify(payload, null, 2), "application/json")) toast("백업 완료 — " + name);
+    else toast("백업에 실패했습니다.");
+  });
+
+  $("btnRestoreGo").addEventListener("click", function(){ $("restoreFile").click(); });
+  $("restoreFile").addEventListener("change", function(){
+    var f = this.files && this.files[0];
+    if (!f) return;
+    var fr = new FileReader();
+    fr.onload = function(){
+      try {
+        var obj = JSON.parse(String(fr.result));
+        var add = obj && obj.dispatch ? obj.dispatch : (Object.prototype.toString.call(obj) === "[object Array]" ? obj : null);
+        if (!add) throw new Error("bad");
+        var list = getList(), seen = {};
+        list.forEach(function(r){ seen[r.id] = true; });
+        var n = 0;
+        add.forEach(function(r){
+          if (!r || !r.id) return;
+          if (seen[r.id]) { r.id = r.id + "-복원" + Math.floor(Math.random()*900 + 100); }
+          seen[r.id] = true;
+          list.push(r); n++;
+        });
+        setList(list);
+        if (obj.drivers) lsSet(K_DRV, obj.drivers);
+        if (obj.cars)    lsSet(K_CAR, obj.cars);
+        renderList(); renderBadge(); renderDrivers();
+        toast(n + "건을 복원했습니다.");
+      } catch(e){ toast("복원 실패 — 올바른 백업 파일이 아닙니다."); }
+      $("restoreFile").value = "";
+    };
+    fr.readAsText(f, "utf-8");
+  });
+
+  $("btnCopyAll").addEventListener("click", function(){
+    var rows = sorted();
+    if (!rows.length) { toast("복사할 배차가 없습니다."); return; }
+    var txt = rows.map(function(r){
+      var dp = depositInfo(r);
+      return fmtWhen(r.when) + " | " + (r.name || "") + " " + fmtPhone(r.phone) + " | " +
+             (r.from || "") + " → " + (r.to || "") + " | " + (r.car || "") + " " + (r.driver || "") +
+             " | " + (Number(r.fare) ? fmtFare(r.fare) + " (" + dp.label + ")" : "요금 미정") + " | " + (r.status || "접수");
+    }).join("\n");
+    copyText(txt).then(function(){ toast(rows.length + "건을 복사했습니다."); })
+      .catch(function(){ toast("복사에 실패했습니다."); });
+  });
+
+  // 설정 — 기사
+  $("dPhone").addEventListener("input", function(){
+    var el = $("dPhone");
+    var atEnd = el.selectionStart === el.value.length;
+    el.value = fmtPhone(el.value);
+    if (atEnd) { try { el.setSelectionRange(el.value.length, el.value.length); } catch(e){} }
+  });
+  $("btnAddDrv").addEventListener("click", function(){
+    var name = val("dName"), phone = val("dPhone"), car = val("dCar");
+    if (name.length < 2) { toast("기사 성함을 입력해 주십시오."); return; }
+    if (phoneDigits(phone).length !== 11) { toast("기사 연락처 11자리를 정확히 입력해 주십시오."); return; }
+    var list = lsGet(K_DRV, []);
+    if (Object.prototype.toString.call(list) !== "[object Array]") list = [];
+    list.push({ name: name, phone: phoneDigits(phone), car: car });
+    lsSet(K_DRV, list);
+    $("dName").value = ""; $("dPhone").value = ""; $("dCar").value = "";
+    renderDrivers();
+    toast("기사를 등록했습니다.");
+  });
+  $("drvList").addEventListener("click", function(ev){
+    var b = ev.target.closest ? ev.target.closest("button[data-ddel]") : null;
+    if (!b) return;
+    var i = Number(b.dataset.ddel);
+    var list = lsGet(K_DRV, []);
+    if (!list[i]) return;
+    if (!window.confirm(list[i].name + " 기사를 명부에서 삭제할까요?")) return;
+    list.splice(i, 1);
+    lsSet(K_DRV, list);
+    renderDrivers();
+    toast("삭제했습니다.");
+  });
+
+  // 설정 — 차량
+  $("btnSaveCars").addEventListener("click", function(){
+    var cars = val("carEdit").split(",").map(function(s){ return s.trim(); }).filter(function(s){ return s; });
+    if (!cars.length) cars = DEF_CARS.slice();
+    lsSet(K_CAR, cars);
+    renderDrivers();
+    toast("차량 목록을 저장했습니다.");
+  });
+
+  // 설정 — 비밀번호
+  $("btnPwChange").addEventListener("click", function(){
+    var oldp = $("pwOld").value, newp = $("pwNew").value;
+    if (String(newp).length < 4) { toast("새 비밀번호는 4자 이상이어야 합니다."); return; }
+    checkPass(oldp).then(function(ok){
+      if (!ok) { toast("현재 비밀번호가 맞지 않습니다."); return; }
+      return sha256hex(newp).then(function(h){
+        try { localStorage.setItem(K_PASS, h); } catch(e){}
+        $("pwOld").value = ""; $("pwNew").value = "";
+        toast("비밀번호를 변경했습니다. 이 기기에 적용됩니다.");
+      });
+    }).catch(function(){ toast("이 브라우저에서는 변경할 수 없습니다."); });
+  });
+  $("btnPwReset").addEventListener("click", function(){
+    if (!window.confirm("비밀번호를 기본값(365365)으로 되돌릴까요?\n배차 목록은 지워지지 않습니다.")) return;
+    try { localStorage.removeItem(K_PASS); } catch(e){}
+    toast("기본 비밀번호(365365)로 초기화했습니다.");
+  });
+
+  // 설정 — 데이터 삭제
+  $("btnWipe").addEventListener("click", function(){
+    if (!window.confirm("저장된 배차 목록을 모두 삭제할까요?\n되돌릴 수 없습니다.")) return;
+    if (!window.confirm("마지막 확인입니다. 정말 삭제하시겠습니까?")) return;
+    setList([]);
+    renderList(); renderBadge();
+    toast("배차 목록을 모두 삭제했습니다.");
+  });
+
+  // 잠금
+  function lock(){
+    ssDel("v365adm");
+    try { localStorage.removeItem(K_EXP); } catch(e){}
+    $("app").classList.add("hidden");
+    $("gate").classList.remove("hidden");
+    $("pw").value = "";
+    location.reload();
+  }
+  $("btnLock").addEventListener("click", lock);
+
+  // 로그인
+  function doLogin(){
+    var p = $("pw").value;
+    $("pwMsg").textContent = "";
+    if (!p) { $("pwMsg").textContent = "비밀번호를 입력해 주십시오."; return; }
+    checkPass(p).then(function(ok){
+      if (!ok) {
+        $("pwMsg").textContent = "비밀번호가 맞지 않습니다.";
+        $("pw").value = ""; $("pw").focus();
+        return;
+      }
+      ssSet("v365adm", "1");
+      try { localStorage.setItem(K_EXP, String(Date.now() + KEEP_DAYS * 86400000)); } catch(e){}
+      openApp();
+    });
+  }
+  $("pwGo").addEventListener("click", doLogin);
+  $("pw").addEventListener("keydown", function(e){ if (e.key === "Enter") doLogin(); });
+
+  function openApp(){
+    $("gate").classList.add("hidden");
+    $("app").classList.remove("hidden");
+    renderList(); renderBadge(); renderDrivers(); update();
+  }
+
+  /* ══════ 자체 점검 (?selftest=1) ══════ */
+  function selftest(){
+    var out = [];
+    function eq(l, g, w){ out.push((g === w ? "OK" : "FAIL") + " " + l + (g === w ? "" : " got=[" + g + "] want=[" + w + "]")); }
+
+    eq("전화 포맷", fmtPhone("01012345678"), "010-1234-5678");
+    eq("일시 포맷", fmtWhen("2026-10-09T07:00"), "2026.10.09(금) 07:00");
+    eq("요금 포맷", fmtFare(90000), "90,000원");
+    eq("접수번호 접두", ymd("2026-10-09T07:00"), "20261009");
+
+    var p1 = parseReservation("[벤티365 예약 요청]\n· 서비스: 공항 픽업\n· 예약자 성함: 홍길동\n· 연락처: 010-1234-5678\n" +
+                              "· 탑승 날짜 및 시간: 2026.10.09(금) 07:00\n· 출발지: 서울 영등포구\n· 도착지: 인천공항 T1\n" +
+                              "· 탑승 인원: 4명\n· 수하물 수량(캐리어, 골프백 등): 캐리어 2\n· 요청 사항: 카시트 필요");
+    eq("파서-성함", p1.data.name, "홍길동");
+    eq("파서-연락처", p1.data.phone, "010-1234-5678");
+    eq("파서-일시", p1.data.when, "2026-10-09T07:00");
+    eq("파서-출발", p1.data.from, "서울 영등포구");
+    eq("파서-도착", p1.data.to, "인천공항 T1");
+    eq("파서-인원", p1.data.pax, "4명");
+    eq("파서-수하물", p1.data.bag, "캐리어 2");
+    eq("파서-특이", p1.data.memo, "카시트 필요");
+    eq("파서-서비스", p1.data.svc, "공항 픽업");
+
+    var p2 = parseReservation("· 성함 : 김철수\n· 연락처：01098765432\n· 출발일시: 2026-11-03 14:30");
+    eq("파서2-성함", p2.data.name, "김철수");
+    eq("파서2-연락처", p2.data.phone, "010-9876-5432");
+    eq("파서2-일시", p2.data.when, "2026-11-03T14:30");
+
+    var rec = { id:"V20261009-001", when:"2026-10-09T07:00", name:"홍길동", phone:"01012345678",
+                svc:"공항 픽업", from:"서울 영등포구", to:"인천공항 T1", pax:"4명", bag:"캐리어 2",
+                car:"카니발", driver:"김기사", driverPhone:"01099998888",
+                fare:90000, deposit:10000, status:"확정", memo:"카시트 필요" };
+    var cm = buildCustomer(rec);
+    var dm = buildDriver(rec);
+    eq("고객문-헤더", cm.split("\n")[0], "[벤티365 배차 확정 안내]");
+    eq("고객문-접수번호", cm.indexOf("· 접수번호: V20261009-001") > -1, true);
+    eq("고객문-잔금", cm.indexOf("· 잔금: 80,000원 (현장 결제)") > -1, true);
+    eq("고객문-문의", cm.indexOf("010-8622-0611") > -1, true);
+    eq("기사문-헤더", dm.split("\n")[0], "[벤티365 배차 지시]");
+    eq("기사문-고객", dm.indexOf("· 고객: 홍길동 010-1234-5678") > -1, true);
+    eq("기사문-특이", dm.indexOf("· 특이사항: 카시트 필요") > -1, true);
+
+    eq("예약금-미입금", depositInfo({ fare:90000, deposit:0 }).balance, 90000);
+    eq("예약금-만원", depositInfo({ fare:90000, deposit:10000 }).label, "10,000원 입금완료");
+    eq("예약금-전액", depositInfo({ fare:90000, deposit:-1 }).balance, 0);
+
+    var badE = errors({ name:"홍", phone:"0101234", when:"", from:"", to:"" });
+    eq("검증-오류5개", Object.keys(badE).length, 5);
+    eq("검증-정상", Object.keys(errors(rec)).length, 0);
+
+    eq("필수요소-버튼", ["btnSave","btnSmsCust","btnSmsDrv","btnCsv","btnJson"].every(function(i){ return !!$(i); }), true);
+    eq("상태5종", STATUSES.length, 5);
+    eq("기본비번해시", DEFAULT_SHA.length, 64);
+
+    document.title = "SELFTEST " + out.filter(function(x){ return x.indexOf("FAIL") === 0; }).length + "fail/" + out.length + " | " + out.join(" || ");
+    window.__SELFTEST__ = { fail: out.filter(function(x){ return x.indexOf("FAIL") === 0; }).length, total: out.length, out: out };
+  }
+
+  /* ══════ 시작 ══════ */
+  function init(){
+    $("footNote").textContent = "기본 비밀번호 365365 · 상담 " + CFG.hours;
+    if (/[?&]selftest=1/.test(location.search)) {
+      // 자체 점검은 잠금을 우회하지 않도록 잠금 화면 상태에서 계산만 수행한다.
+      selftest();
+      openApp();
+      switchTab("list");
+      return;
+    }
+    if (unlocked()) openApp();
+    else setTimeout(function(){ try { $("pw").focus(); } catch(e){} }, 300);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+
+})();
+</script>
+</body>
+</html>
