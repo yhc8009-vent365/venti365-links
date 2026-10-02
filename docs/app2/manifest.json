@@ -1,0 +1,24 @@
+{
+  "name": "벤티 365 — 간편 예약",
+  "short_name": "벤티365",
+  "description": "공항 픽업·드랍, 골프장 왕복, 지방 출장 예약 접수. 정보 입력 후 문자 또는 카카오톡으로 바로 접수됩니다.",
+  "lang": "ko",
+  "dir": "ltr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F2F4F6",
+  "theme_color": "#FEE500",
+  "categories": ["travel", "business", "productivity"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "공항 픽업 예약", "short_name": "공항 픽업", "url": "./index.html?svc=airport-pickup" },
+    { "name": "골프 예약", "short_name": "골프", "url": "./index.html?svc=golf" },
+    { "name": "전화 상담", "short_name": "전화", "url": "tel:01079263561" }
+  ]
+}

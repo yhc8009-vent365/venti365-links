@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>벤티 365 — 간편 예약</title>
+
+<meta name="theme-color" content="#FEE500">
+<meta name="description" content="공항 픽업·드랍, 골프장 왕복, 지방 출장 — 벤티 365 카카오 T 벤티 예약 접수. 성함·연락처·일시·출발/도착지만 입력하면 문자 또는 카카오톡으로 바로 접수됩니다.">
+<meta property="og:title" content="벤티 365 — 간편 예약">
+<meta property="og:description" content="공항 픽업·골프·지방출장 예약을 1분 안에 접수합니다.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://yhc8009-vent365.github.io/venti365-links/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="벤티365">
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --kakao:#FEE500; --kakao-press:#F2D900; --kakao-soft:#FFFBE0;
+  --ink:#191919; --sub:#4E5968; --muted:#8B95A1;
+  --bg:#F2F4F6; --card:#FFFFFF; --line:#E5E8EB;
+  --blue:#3182F6; --blue-soft:#E8F1FE;
+  --green:#00B26B; --red:#F04452;
+  --r:16px; --r-sm:12px;
+  --safe-b:env(safe-area-inset-bottom,0px);
+}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;
+  font-size:16px; line-height:1.55; letter-spacing:-.01em;
+  -webkit-font-smoothing:antialiased; padding-bottom:calc(84px + var(--safe-b));
+}
+img{display:block;max-width:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+.wrap{max-width:560px;margin:0 auto;padding:0 16px}
+
+/* ── 상단바 ── */
+.topbar{
+  position:sticky;top:0;z-index:40;background:var(--kakao);
+  padding:calc(12px + env(safe-area-inset-top,0px)) 0 12px;
+  box-shadow:0 1px 0 rgba(0,0,0,.06);
+}
+.topbar .wrap{display:flex;align-items:center;gap:10px}
+.brand{display:flex;align-items:center;gap:8px;font-weight:800;font-size:19px;letter-spacing:-.03em}
+.brand .mark{width:32px;height:32px;flex:none;display:block}
+.brand .mark svg{width:100%;height:100%;display:block;border-radius:9px}
+.topbar .spacer{flex:1}
+.iconbtn{
+  display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.75);
+  border-radius:999px;padding:8px 13px;font-size:13.5px;font-weight:700
+}
+.iconbtn:active{transform:scale(.97)}
+
+/* ── 인트로 ── */
+.hero{padding:20px 0 4px}
+.hero h1{font-size:22px;font-weight:800;letter-spacing:-.04em;line-height:1.35}
+.hero h1 em{font-style:normal;background:linear-gradient(transparent 58%,#FFE95C 58%)}
+.hero p{color:var(--sub);font-size:14.5px;margin-top:8px}
+.hours{
+  display:inline-flex;align-items:center;gap:7px;margin-top:12px;
+  background:#fff;border:1px solid var(--line);border-radius:999px;
+  padding:8px 14px;font-size:13.5px;color:var(--sub);font-weight:600
+}
+.hours b{color:var(--ink)}
+
+/* ── 카드 ── */
+.card{background:var(--card);border-radius:var(--r);padding:18px;margin-top:14px}
+.card>h2{font-size:16px;font-weight:800;letter-spacing:-.03em;margin-bottom:2px}
+.card>.hint{font-size:13px;color:var(--muted);margin-bottom:14px}
+.step{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:20px;height:20px;border-radius:50%;background:var(--ink);color:var(--kakao);
+  font-size:12px;font-weight:800;margin-right:7px;flex:none
+}
+.card>h2{display:flex;align-items:center}
+
+/* ── 서비스 선택 ── */
+.svc{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.svc button{
+  background:#fff;border:1.5px solid var(--line);border-radius:var(--r-sm);
+  padding:15px 8px;text-align:center;transition:border-color .15s,background .15s
+}
+.svc .ico{font-size:26px;line-height:1.1;margin-bottom:6px}
+.svc .nm{font-size:14.5px;font-weight:700;color:var(--sub)}
+.svc button[aria-pressed="true"]{border-color:var(--ink);background:var(--kakao-soft)}
+.svc button[aria-pressed="true"] .nm{color:var(--ink)}
+
+/* ── 입력 ── */
+.fld{margin-bottom:14px}
+.fld:last-of-type{margin-bottom:0}
+.fld label{display:block;font-size:13.5px;font-weight:700;color:var(--sub);margin-bottom:7px}
+.fld label .req{color:var(--red);margin-left:2px}
+.fld input,.fld textarea{
+  width:100%;background:#F9FAFB;border:1px solid var(--line);border-radius:var(--r-sm);
+  padding:14px 14px;font-size:16px;
+}
+.fld textarea{min-height:74px;resize:vertical;line-height:1.5}
+.fld input::placeholder,.fld textarea::placeholder{color:#B0B8C1}
+.fld input:focus,.fld textarea:focus{outline:none;border-color:var(--blue);background:#fff}
+.fld.bad input,.fld.bad textarea{border-color:var(--red);background:#FFF5F6}
+.err{display:none;color:var(--red);font-size:12.5px;margin-top:6px;font-weight:600}
+.fld.bad .err{display:block}
+.soon{display:none;color:#8A6D00;background:#FFF8DC;border-radius:9px;padding:9px 11px;font-size:12.5px;margin-top:8px;line-height:1.5}
+.soon.on{display:block}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* ── 동의 ── */
+.agree{
+  display:flex;gap:11px;align-items:flex-start;background:#F9FAFB;
+  border:1px solid var(--line);border-radius:var(--r-sm);padding:13px;
+}
+.agree input{width:20px;height:20px;flex:none;margin-top:2px;accent-color:var(--ink)}
+.agree .tx{font-size:13px;color:var(--sub);line-height:1.5}
+.agree .tx b{color:var(--ink)}
+.agree.bad{border-color:var(--red);background:#FFF5F6}
+
+/* ── 요약 ── */
+.sum{background:var(--kakao-soft);border-radius:var(--r-sm);padding:14px;margin-top:14px}
+.sum h3{font-size:13px;font-weight:800;color:var(--sub);margin-bottom:8px}
+.sum pre{
+  font-family:inherit;font-size:14px;line-height:1.6;white-space:pre-wrap;
+  word-break:break-word;color:var(--ink)
+}
+.sum .empty{font-size:13.5px;color:var(--muted)}
+
+/* ── 버튼 ── */
+.acts{display:grid;gap:9px;margin-top:16px}
+.btn{
+  width:100%;border-radius:14px;padding:17px;font-size:16.5px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;gap:8px;letter-spacing:-.02em
+}
+.btn:active{transform:scale(.985)}
+.btn-kakao{background:var(--kakao);color:var(--ink)}
+.btn-kakao:active{background:var(--kakao-press)}
+.btn-sms{background:var(--ink);color:#fff}
+.btn-ghost{background:#fff;border:1.5px solid var(--line);color:var(--sub);font-weight:700;font-size:15px}
+.btn[disabled]{opacity:.45}
+a.btn{text-decoration:none}
+.ch-link{margin-top:14px}
+.tag{
+  font-size:11.5px;font-weight:800;background:rgba(255,255,255,.22);
+  border-radius:999px;padding:3px 8px;margin-left:2px;letter-spacing:-.01em
+}
+
+/* ── 안내 ── */
+.note{
+  border-left:4px solid var(--blue);background:var(--blue-soft);
+  border-radius:10px;padding:13px 14px;font-size:13.5px;color:#1B4B8F;line-height:1.6
+}
+.note b{color:#123A70}
+.guide{display:grid;gap:12px}
+.gi{display:grid;grid-template-columns:86px 1fr;gap:10px;font-size:13.5px;align-items:start}
+.gk{color:var(--muted);font-weight:700}
+.gv{color:var(--sub);line-height:1.55}
+.gv b{color:var(--ink)}
+.warnline{font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.55}
+
+/* ── 하단 고정바 ── */
+.dock{
+  position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(255,255,255,.94);
+  backdrop-filter:blur(10px);border-top:1px solid var(--line);
+  padding:11px 16px calc(11px + var(--safe-b));
+}
+.dock .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:1.25fr 1fr;gap:9px}
+.dock a{
+  text-decoration:none;border-radius:13px;padding:14px;font-size:15.5px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;gap:7px
+}
+.dock .k{background:var(--kakao);color:var(--ink)}
+.dock .t{background:var(--ink);color:#fff}
+
+/* ── 앱 내부 브라우저 경고 ── */
+.inapp{display:none;background:#FFF4E5;border:1px solid #FFD79A;border-radius:var(--r);padding:14px 15px;margin-top:14px}
+.inapp.on{display:block}
+.inapp .t{font-size:14px;font-weight:800;color:#8A5000;margin-bottom:5px}
+.inapp .d{font-size:13px;color:#7A5A20;line-height:1.55}
+.inapp .d b{color:#5C3D00}
+
+/* ── 설치 배너 ── */
+.install{display:none;background:var(--ink);color:#fff;border-radius:var(--r);padding:15px 16px;margin-top:14px}
+.install.on{display:block}
+.install .t{font-size:14.5px;font-weight:800;margin-bottom:4px}
+.install .d{font-size:13px;color:#C9CDD2;line-height:1.55}
+.install .row{display:flex;gap:8px;margin-top:12px}
+.install button{border-radius:11px;padding:11px 15px;font-size:14px;font-weight:800}
+.install .go{background:var(--kakao);color:var(--ink)}
+.install .no{background:rgba(255,255,255,.12);color:#fff}
+
+/* ── 토스트 ── */
+.toast{
+  position:fixed;left:50%;bottom:calc(96px + var(--safe-b));transform:translate(-50%,14px);
+  background:rgba(25,25,25,.94);color:#fff;font-size:14px;font-weight:600;
+  padding:12px 18px;border-radius:12px;opacity:0;pointer-events:none;
+  transition:opacity .22s,transform .22s;z-index:80;max-width:88vw;text-align:center
+}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* ── 푸터 ── */
+footer{padding:26px 0 18px;text-align:center;font-size:12.5px;color:var(--muted);line-height:1.7}
+footer .biz{margin-top:6px;font-size:12px;color:#9AA3AD}
+@media (max-width:360px){
+  .hero h1{font-size:20px}
+  .svc .nm{font-size:13.5px}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="brand"><span class="mark" aria-hidden="true"><svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><rect width="512" height="512" rx="112" fill="#191919"/><path d="M136 104 L256 292 L376 104" fill="none" stroke="#FEE500" stroke-width="52" stroke-linecap="round" stroke-linejoin="round"/><text x="256" y="440" text-anchor="middle" font-family="'Helvetica Neue','Apple SD Gothic Neo',sans-serif" font-size="110" font-weight="800" fill="#FEE500" letter-spacing="1">365</text></svg></span>벤티 365</div>
+    <div class="spacer"></div>
+    <a class="iconbtn" href="tel:01079263561">📞 전화</a>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="hero">
+    <h1>공항 픽업·골프·지방출장<br><em>1분 예약 접수</em></h1>
+    <p>아래 정보만 입력하시면 <b>문자</b> 또는 <b>카카오톡</b>으로 바로 접수됩니다. 접수 후 예상 요금과 예약금을 안내해 드립니다.</p>
+    <div class="hours">🕐 상담·접수 <b id="hoursText">24시간 (연중무휴)</b></div>
+  </section>
+
+  <!-- 앱 내부 브라우저 경고 (카카오톡·인스타 등에서 열었을 때) -->
+  <section class="inapp" id="inappBox">
+    <div class="t">⚠️ 카카오톡(또는 앱) 내부 브라우저로 보고 계십니다</div>
+    <div class="d">이 상태에서는 <b>카카오톡 채널로 이동이 막힐 수 있습니다.</b>
+      오른쪽 위 <b>⋯</b>(또는 공유 버튼) → <b>다른 브라우저로 열기 / Safari로 열기</b>를 눌러 다시 열어주세요.<br>
+      <b>문자 접수는 이 상태에서도 정상 작동합니다.</b></div>
+  </section>
+
+  <!-- ① 서비스 선택 -->
+  <section class="card">
+    <h2><span class="step">1</span>서비스 선택</h2>
+    <p class="hint">이용하실 서비스를 골라주세요.</p>
+    <div class="svc" id="svcGrid" role="group" aria-label="서비스 선택">
+      <button type="button" aria-pressed="true"  data-svc="골프 예약"><div class="ico">⛳</div><div class="nm">골프 예약</div></button>
+      <button type="button" aria-pressed="false" data-svc="공항 픽업"><div class="ico">✈️</div><div class="nm">공항 픽업</div></button>
+      <button type="button" aria-pressed="false" data-svc="공항 드랍"><div class="ico">🛫</div><div class="nm">공항 드랍</div></button>
+      <button type="button" aria-pressed="false" data-svc="지방 출장"><div class="ico">🧳</div><div class="nm">지방 출장</div></button>
+    </div>
+  </section>
+
+  <!-- ② 예약 정보 -->
+  <section class="card">
+    <h2><span class="step">2</span>예약 정보 입력</h2>
+    <p class="hint"><span style="color:#F04452">*</span> 표시는 필수 항목입니다.</p>
+
+    <div class="fld" id="f-name">
+      <label for="name">예약자 성함<span class="req">*</span></label>
+      <input type="text" id="name" autocomplete="name" placeholder="예: 홍길동" maxlength="20">
+      <div class="err">성함을 입력해 주세요.</div>
+    </div>
+
+    <div class="fld" id="f-phone">
+      <label for="phone">연락처<span class="req">*</span></label>
+      <input type="tel" id="phone" inputmode="numeric" autocomplete="tel" placeholder="010-1234-5678" maxlength="13">
+      <div class="err">휴대폰 번호 11자리를 정확히 입력해 주세요.</div>
+    </div>
+
+    <div class="fld" id="f-when">
+      <label for="when">탑승 날짜 및 시간<span class="req">*</span></label>
+      <input type="datetime-local" id="when">
+      <div class="err">오늘 이후 시각을 선택해 주세요.</div>
+      <div class="soon" id="soon">⏳ 24시간 이내 탑승입니다. 스케줄 조율상 접수가 어려울 수 있으니 문자로 먼저 확인해 주세요.</div>
+    </div>
+
+    <div class="fld" id="f-from">
+      <label for="from">출발지<span class="req">*</span></label>
+      <input type="text" id="from" placeholder="예: 서울 영등포구 여의도동" maxlength="60">
+      <div class="err">출발지를 입력해 주세요.</div>
+    </div>
+
+    <div class="fld" id="f-to">
+      <label for="to">도착지<span class="req">*</span></label>
+      <input type="text" id="to" placeholder="예: 인천공항 제1여객터미널" maxlength="60">
+      <div class="err">도착지를 입력해 주세요.</div>
+    </div>
+
+    <div class="row2">
+      <div class="fld">
+        <label for="pax">탑승 인원</label>
+        <input type="text" id="pax" inputmode="numeric" placeholder="예: 4명" maxlength="10">
+      </div>
+      <div class="fld">
+        <label for="bag">수하물 수량(캐리어·골프백)</label>
+        <input type="text" id="bag" placeholder="예: 캐리어 2, 골프백 2" maxlength="30">
+      </div>
+    </div>
+
+    <div class="fld">
+      <label for="memo">요청 사항</label>
+      <textarea id="memo" placeholder="예: 유아 카시트 필요 / 새벽 5시 픽업 / 짐이 많습니다" maxlength="200"></textarea>
+    </div>
+
+    <!-- 동의 -->
+    <label class="agree" id="agreeBox" for="agree">
+      <input type="checkbox" id="agree">
+      <span class="tx"><b>[필수]</b> 예약 접수 목적의 <b>성함·연락처 수집 및 이용</b>에 동의합니다. 수집 항목: 성함, 연락처 / 이용 목적: 예약 확인 및 연락 / 보유 기간: 업무 완료 후 파기. 동의를 거부하실 수 있으나, 거부 시 예약 접수가 어렵습니다.</span>
+    </label>
+  </section>
+
+  <!-- ③ 접수 -->
+  <section class="card">
+    <h2><span class="step">3</span>접수 내용 확인 후 전송</h2>
+    <p class="hint">전송 전에 아래 내용을 확인해 주세요.</p>
+
+    <div class="sum">
+      <h3>접수될 내용</h3>
+      <pre id="preview">위 정보를 입력하시면 접수 내용이 여기에 표시됩니다.</pre>
+    </div>
+
+    <div class="acts">
+      <button type="button" class="btn btn-sms" id="btnSms">✉️ 문자로 접수하기 <span class="tag">가장 빠름</span></button>
+      <a class="btn btn-kakao" id="btnKakao" href="https://pf.kakao.com/_xgMuaX/chat">💬 카카오톡 채널 열고 붙여넣기</a>
+      <button type="button" class="btn btn-ghost" id="btnCopy">접수 내용 복사만 하기</button>
+    </div>
+
+    <p class="warnline">
+      · 앱이 자동으로 보내지는 않습니다. 버튼을 누르면 <b>문자 앱</b> 또는 <b>카카오톡 채널</b>이 열립니다.<br>
+      · <b>문자</b> — 내용이 문자창에 채워집니다. <b>전송 버튼만</b> 누르면 접수됩니다.<br>
+      · <b>카카오톡</b> — 내용이 자동 복사됩니다. 채널 채팅창에서 <b>입력창을 길게 눌러 → 붙여넣기 → 전송</b> 해주세요.<br>
+      · 붙여넣기가 안 되면 <b>복사만 하기</b>를 누르고 원하는 곳에 붙여넣으시면 됩니다.
+    </p>
+  </section>
+
+  <!-- 예약금 안내 -->
+  <section class="card">
+    <h2>💳 예약금 안내</h2>
+    <p class="hint">접수 후 안내 절차</p>
+    <div class="note">
+      <b>1.</b> 예약 접수 → 담당자가 <b>예상 요금</b>을 문자·카카오톡으로 안내<br>
+      <b>2.</b> 예약 확정을 위해 <b>선불 예약금 10,000원</b> 무통장 입금<br>
+      <b>3.</b> 잔금은 <b>현장에서 결제</b>
+    </div>
+    <a class="btn btn-kakao ch-link" href="https://pf.kakao.com/_xgMuaX/chat" target="_blank" rel="noopener">
+      💬 카카오톡 채널에서 예약금·계좌 안내받기
+    </a>
+    <p class="warnline">※ <b>입금 계좌와 예약금 안내는 카카오톡 채널</b>에서 확인하실 수 있습니다. 요금은 거리·시간·차량 종류에 따라 달라지므로 사전 확정 금액은 안내드리지 않습니다.</p>
+  </section>
+
+  <!-- 이용 안내 -->
+  <section class="card">
+    <h2>📌 이용 안내</h2>
+    <p class="hint">접수 전에 확인해 주세요.</p>
+    <div class="guide">
+      <div class="gi"><span class="gk">상담·접수 시간</span><span class="gv" id="hoursText2">24시간 (연중무휴)</span></div>
+      <div class="gi"><span class="gk">예약 시기</span><span class="gv">스케줄 조율상 당일 예약은 어렵습니다. <b>최소 1~2일 전</b> 예약을 부탁드립니다.</span></div>
+      <div class="gi"><span class="gk">운행 구간</span><span class="gv">공항·골프장·지방출장 등 <b>예약 운행만</b> 가능합니다. 단거리 시내 이동 예약은 불가합니다.</span></div>
+      <div class="gi"><span class="gk">문의 방식</span><span class="gv">운행 중에는 전화상담이 어려워 <b>문자·카카오톡</b> 상담을 권장합니다.</span></div>
+    </div>
+  </section>
+
+  <!-- 설치 안내 -->
+  <section class="install" id="installBox">
+    <div class="t">📲 홈 화면에 추가하면 앱처럼 씁니다</div>
+    <div class="d" id="installDesc">아이콘을 누르면 전체화면으로 열리고, 인터넷이 끊겨도 화면이 뜹니다.</div>
+    <div class="row">
+      <button type="button" class="go" id="installGo">홈 화면에 추가</button>
+      <button type="button" class="no" id="installNo">나중에</button>
+    </div>
+  </section>
+
+  <footer>
+    <div>벤티 365 · 카카오 T 벤티 예약 접수</div>
+    <div class="biz" id="bizLine">문의 010-7926-3561 · 카카오톡 채널 '벤티365'</div>
+  </footer>
+</main>
+
+<!-- 하단 고정바 -->
+<nav class="dock">
+  <div class="in">
+    <a class="k" href="https://pf.kakao.com/_xgMuaX/chat" target="_blank" rel="noopener">💬 카카오톡 상담</a>
+    <a class="t" href="tel:01079263561">📞 전화 상담</a>
+  </div>
+</nav>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ── 설정 ── */
+  var CFG = {
+    phone: "01079263561",
+    phoneText: "010-7926-3561",
+    kakao: "https://pf.kakao.com/_xgMuaX/chat",
+    hours: "24시간 (연중무휴)",           // 문자·카카오톡 상담 시간
+    soonHours: 24,                                  // 이 시간 이내 탑승이면 '임박' 안내를 띄운다
+    bizLine: "문의 010-7926-3561 · 카카오톡 채널 '벤티365'"
+  };
+
+  var $ = function(id){ return document.getElementById(id); };
+  var svc = "골프 예약";
+
+  /* ── 유틸 ── */
+  function pad(n){ return (n < 10 ? "0" : "") + n; }
+
+  function fmtPhone(v){
+    var d = String(v || "").replace(/\D/g, "").slice(0, 11);
+    if (d.length < 4) return d;
+    if (d.length < 8) return d.slice(0,3) + "-" + d.slice(3);
+    if (d.length < 11) return d.slice(0,3) + "-" + d.slice(3, d.length - 4) + "-" + d.slice(d.length - 4);
+    return d.slice(0,3) + "-" + d.slice(3,7) + "-" + d.slice(7);
+  }
+
+  function nowLocalValue(){
+    var d = new Date(Date.now() + 10 * 60000);
+    return d.getFullYear() + "-" + pad(d.getMonth()+1) + "-" + pad(d.getDate()) + "T" + pad(d.getHours()) + ":" + pad(d.getMinutes());
+  }
+
+  function fmtWhen(v){
+    if (!v) return "";
+    var p = v.split("T");
+    if (p.length !== 2) return v;
+    var dmy = p[0].split("-"), hm = p[1].split(":");
+    var w = ["일","월","화","수","목","금","토"];
+    var dt = new Date(+dmy[0], +dmy[1]-1, +dmy[2]);
+    var day = isNaN(dt.getTime()) ? "" : "(" + w[dt.getDay()] + ")";
+    return dmy[0] + "." + dmy[1] + "." + dmy[2] + day + " " + hm[0] + ":" + hm[1];
+  }
+
+  /* ── 서비스 선택 ── */
+  var svcBtns = Array.prototype.slice.call(document.querySelectorAll("#svcGrid button"));
+  svcBtns.forEach(function(b){
+    b.addEventListener("click", function(){
+      svc = b.dataset.svc;
+      svcBtns.forEach(function(o){ o.setAttribute("aria-pressed", String(o === b)); });
+      update();
+    });
+  });
+
+  /* ── 입력 이벤트 ── */
+  var FIELDS = ["name","phone","when","from","to","pax","bag","memo"];
+  var phoneEl = $("phone");
+  phoneEl.addEventListener("input", function(){
+    var atEnd = phoneEl.selectionStart === phoneEl.value.length;
+    phoneEl.value = fmtPhone(phoneEl.value);
+    if (atEnd) { try { phoneEl.setSelectionRange(phoneEl.value.length, phoneEl.value.length); } catch(e){} }
+    update();
+  });
+  FIELDS.forEach(function(k){
+    if (k === "phone") return;
+    var el = $(k);
+    el.addEventListener("input", update);
+    el.addEventListener("change", update);
+  });
+  $("agree").addEventListener("change", function(){ $("agreeBox").classList.remove("bad"); update(); });
+
+  /* ── 값 수집 / 검증 ── */
+  function val(k){ return ($(k).value || "").trim(); }
+
+  function collect(){
+    return {
+      svc: svc, name: val("name"), phone: val("phone"), when: val("when"),
+      from: val("from"), to: val("to"), pax: val("pax"), bag: val("bag"),
+      memo: val("memo"), agree: $("agree").checked
+    };
+  }
+
+  function errors(d){
+    var e = {};
+    if (d.name.length < 2) e.name = true;
+    if (d.phone.replace(/\D/g,"").length !== 11) e.phone = true;
+    var okWhen = false;
+    if (d.when) {
+      var t = new Date(d.when).getTime();
+      okWhen = !isNaN(t) && t > Date.now() - 60000;
+    }
+    if (!okWhen) e.when = true;
+    if (d.from.length < 2) e.from = true;
+    if (d.to.length < 2) e.to = true;
+    return e;
+  }
+
+  function markErrors(e){
+    ["name","phone","when","from","to"].forEach(function(k){
+      $("f-" + k).classList.toggle("bad", !!e[k]);
+    });
+  }
+
+  /* ── 메시지 생성 (블로그 「문자 남겨주실 양식」과 동일한 항목 순서) ── */
+  function buildMessage(d){
+    var L = [];
+    L.push("[벤티365 예약 요청]");
+    L.push("· 서비스: " + d.svc);
+    L.push("· 예약자 성함: " + d.name);
+    L.push("· 연락처: " + d.phone);
+    L.push("· 탑승 날짜 및 시간: " + fmtWhen(d.when));
+    L.push("· 출발지: " + d.from);
+    L.push("· 도착지: " + d.to);
+    L.push("· 탑승 인원: " + (d.pax || "미입력"));
+    L.push("· 수하물 수량(캐리어, 골프백 등): " + (d.bag || "미입력"));
+    if (d.memo) L.push("· 요청 사항: " + d.memo);
+    L.push("");
+    L.push("→ 예상 요금과 예약금 안내 부탁드립니다.");
+    return L.join("\n");
+  }
+
+  /* ── 미리보기 + 오류 표시 해제 ── */
+  function update(){
+    var d = collect();
+    var filled = d.name || d.phone || d.when || d.from || d.to;
+    $("preview").textContent = filled
+      ? buildMessage(d)
+      : "위 정보를 입력하시면 접수 내용이 여기에 표시됩니다.";
+
+    // 한 번 표시된 오류는 '고쳐지는 순간' 바로 사라져야 한다 (수정했는데 빨간 테두리가 남으면 불안해진다)
+    var e = errors(d);
+    ["name","phone","when","from","to"].forEach(function(k){
+      var box = $("f-" + k);
+      if (box.classList.contains("bad") && !e[k]) box.classList.remove("bad");
+    });
+
+    // 임박 탑승(기본 24시간 이내)이면 조율 안내를 띄운다 — 블로그 안내문의 "당일 예약은 어렵습니다"와 같은 취지
+    var soon = $("soon");
+    if (d.when) {
+      var t = new Date(d.when).getTime();
+      var gap = t - Date.now();
+      soon.classList.toggle("on", !isNaN(t) && gap > 0 && gap < CFG.soonHours * 3600000);
+    } else {
+      soon.classList.remove("on");
+    }
+  }
+
+  /* ── 토스트 ── */
+  var toastTimer = null;
+  function toast(msg){
+    var t = $("toast");
+    t.textContent = msg;
+    t.classList.add("on");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ t.classList.remove("on"); }, 2600);
+  }
+
+  /* ── 검증 후 실행 ── */
+  function guard(){
+    var d = collect(), e = errors(d);
+    markErrors(e);
+    var keys = Object.keys(e);
+    if (keys.length) {
+      var el = $("f-" + keys[0]);
+      el.scrollIntoView({behavior:"smooth", block:"center"});
+      toast("입력하지 않았거나 형식이 맞지 않는 항목이 있습니다.");
+      return null;
+    }
+    if (!d.agree) {
+      $("agreeBox").classList.add("bad");
+      $("agreeBox").scrollIntoView({behavior:"smooth", block:"center"});
+      toast("개인정보 수집·이용 동의가 필요합니다.");
+      return null;
+    }
+    return d;
+  }
+
+  /* ── 문자 전송 ── */
+  $("btnSms").addEventListener("click", function(){
+    var d = guard();
+    if (!d) return;
+    var body = encodeURIComponent(buildMessage(d));
+    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    var href = "sms:" + CFG.phone + (isIOS ? "&body=" : "?body=") + body;
+    window.location.href = href;
+    toast("문자 앱이 열립니다. 그대로 전송해 주세요.");
+  });
+
+  /* ── 복사 ──
+     모바일에서 가장 확실한 건 '동기' 방식(execCommand)이다. 비동기 클립보드 API는
+     인앱 브라우저·구형 안드로이드에서 조용히 실패하는 경우가 있다. 동기 → 비동기 순으로 시도한다. */
+  function copySync(t){
+    try {
+      var ta = document.createElement("textarea");
+      ta.value = t;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.top = "0";
+      ta.style.left = "0";
+      ta.style.width = "1px";
+      ta.style.height = "1px";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      try { ta.setSelectionRange(0, t.length); } catch(e){}
+      var ok = false;
+      try { ok = document.execCommand("copy"); } catch(e){ ok = false; }
+      document.body.removeChild(ta);
+      return ok;
+    } catch (err) { return false; }
+  }
+
+  function copyText(t){
+    if (copySync(t)) return Promise.resolve(true);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(t).then(function(){ return true; });
+    }
+    return Promise.reject(new Error("copy failed"));
+  }
+
+  /* ── 카카오톡 채널 ──
+     ⚠️ 1차 실패(2026-10-01): 복사 후 setTimeout + window.open → 모바일이 팝업으로 차단, 아무 일도 안 일어남.
+     ⚠️ 2차 실패(2026-10-02): copySync 성공을 조건으로 삼아 실패 시 return → 아이폰/인앱 브라우저에서
+        execCommand 가 false 를 돌려주면 채널조차 열리지 않았다.
+     → 최종 구조: 이 버튼은 <a href> 실제 링크다. 브라우저가 '무조건' 채널을 연다.
+        JS 는 복사만 '덤으로' 시도하고, 실패해도 이동을 막지 않는다.
+        (검증 실패 시에만 기본 이동을 취소한다) */
+  $("btnKakao").addEventListener("click", function(ev){
+    var d = collect(), e = errors(d);
+    if (Object.keys(e).length || !d.agree) {   // 입력이 덜 됐으면 안내만 하고 이동 취소
+      ev.preventDefault();
+      guard();
+      return;
+    }
+    var msg = buildMessage(d);
+    var ok = copySync(msg);
+    if (!ok && navigator.clipboard && navigator.clipboard.writeText) {
+      try { navigator.clipboard.writeText(msg); } catch(e2){}
+    }
+    toast(ok ? "복사했습니다. 채널 채팅창에서 길게 눌러 붙여넣기 하세요."
+             : "채널을 엽니다. 붙여넣기가 안 되면 [접수 내용 복사만 하기]를 먼저 눌러주세요.");
+    // 여기서 return 하지 않는다 — <a> 기본 이동이 그대로 진행된다.
+  });
+
+  /* ── 복사만 ── */
+  $("btnCopy").addEventListener("click", function(){
+    var d = guard();
+    if (!d) return;
+    copyText(buildMessage(d)).then(function(){
+      toast("접수 내용을 복사했습니다. 원하는 곳에 붙여넣어 주세요.");
+    }).catch(function(){
+      toast("복사에 실패했습니다. 미리보기를 길게 눌러 복사해 주세요.");
+    });
+  });
+
+  /* ── 초안 자동 저장 (같은 기기에서만) ── */
+  var SKEY = "venti7926_draft_v1";
+  function saveDraft(){
+    try {
+      var d = collect();
+      localStorage.setItem(SKEY, JSON.stringify(d));
+    } catch(e){}
+  }
+  function loadDraft(){
+    try {
+      var raw = localStorage.getItem(SKEY);
+      if (!raw) return;
+      var d = JSON.parse(raw);
+      if (d.svc) {
+        svc = d.svc;
+        svcBtns.forEach(function(b){ b.setAttribute("aria-pressed", String(b.dataset.svc === d.svc)); });
+      }
+      ["name","phone","when","from","to","pax","bag","memo"].forEach(function(k){
+        if (d[k]) $(k).value = d[k];
+      });
+      if (d.agree) $("agree").checked = true;
+    } catch(e){}
+  }
+  document.addEventListener("input", function(){ clearTimeout(saveDraft._t); saveDraft._t = setTimeout(saveDraft, 600); });
+
+  /* ── 일시 최소값: 지금 ── */
+  function setMin(){
+    var el = $("when");
+    el.min = nowLocalValue();
+  }
+
+  /* ── 문의처·상담시간 푸터 ── */
+  $("bizLine").textContent = CFG.bizLine + " · 상담 " + CFG.hours;
+  ["hoursText", "hoursText2"].forEach(function(id){ if ($(id)) $(id).textContent = CFG.hours; });
+
+  /* ── PWA 설치 ── */
+  var deferred = null;
+  window.addEventListener("beforeinstallprompt", function(e){
+    e.preventDefault();
+    deferred = e;
+    $("installBox").classList.add("on");
+  });
+  $("installGo").addEventListener("click", function(){
+    if (!deferred) {
+      $("installBox").classList.remove("on");
+      toast('브라우저 메뉴에서 "홈 화면에 추가"를 선택해 주세요.');
+      return;
+    }
+    deferred.prompt();
+    deferred.userChoice.then(function(){ deferred = null; $("installBox").classList.remove("on"); });
+  });
+  $("installNo").addEventListener("click", function(){
+    $("installBox").classList.remove("on");
+  });
+
+  /* iOS 사파리는 설치 프롬프트가 없어 안내 배너만 띄운다 */
+  function iosInstallHint(){
+    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    var standalone = window.navigator.standalone === true;
+    if (isIOS && !standalone) {
+      $("installDesc").innerHTML = '사파리 하단의 <b>공유 버튼</b> → <b>"홈 화면에 추가"</b>를 누르면 앱처럼 설치됩니다.';
+      $("installGo").textContent = "확인";
+      $("installGo").addEventListener("click", function(){ $("installBox").classList.remove("on"); });
+      $("installBox").classList.add("on");
+    }
+  }
+
+  /* 앱 내부 브라우저(카카오톡·인스타·네이버 등)에서는 채널 이동이 막힌다 → 먼저 안내한다.
+     실제 신고: 카카오톡으로 받은 링크를 카카오톡 안에서 열면 채널로 다시 들어가지지 않는다. */
+  function inAppHint(){
+    var ua = navigator.userAgent || "";
+    if (/KAKAOTALK|Instagram|FBAN|FBAV|FB_IAB|NAVER\(inapp|Line\/|SnapChat/i.test(ua)) {
+      $("inappBox").classList.add("on");
+    }
+  }
+
+  /* ── 서비스워커 ── */
+  if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0) {
+    window.addEventListener("load", function(){
+      navigator.serviceWorker.register("sw.js").catch(function(){});
+    });
+  }
+
+  /* ── 자체 점검 (?selftest=1) ── */
+  function selftest(){
+    var out = [];
+    function eq(label, got, want){
+      out.push((got === want ? "OK" : "FAIL") + " " + label + (got === want ? "" : " got=[" + got + "] want=[" + want + "]"));
+    }
+    var d = {svc:"공항 픽업", name:"홍길동", phone:"010-1234-5678", when:"2027-01-05T14:30",
+             from:"서울 영등포구", to:"인천공항 T1", pax:"4명", bag:"캐리어 2", memo:"카시트 필요", agree:true};
+    var m = buildMessage(d);
+    eq("메시지 헤더", m.split("\n")[0], "[벤티365 예약 요청]");
+    eq("서비스 반영", m.indexOf("· 서비스: 공항 픽업") > -1, true);
+    eq("일시 포맷", m.indexOf("· 탑승 날짜 및 시간: 2027.01.05(화) 14:30") > -1, true);
+    eq("요청 반영", m.indexOf("· 요청 사항: 카시트 필요") > -1, true);
+    eq("블로그 양식 일치", m.indexOf("· 수하물 수량(캐리어, 골프백 등): 캐리어 2") > -1, true);
+    eq("문의 문구", m.indexOf("예상 요금과 예약금 안내") > -1, true);
+    eq("전화 포맷", fmtPhone("01012345678"), "010-1234-5678");
+    eq("전화 포맷(짧음)", fmtPhone("01012"), "010-12");
+    eq("검증-정상", Object.keys(errors(d)).length, 0);
+    var bad = {svc:"골프 예약", name:"홍", phone:"0101234", when:"2020-01-01T10:00", from:"", to:"", agree:false};
+    eq("검증-오류5개", Object.keys(errors(bad)).length, 5);
+    eq("동의 기본값", $("agree").checked, false);
+    eq("연락처", CFG.phone, "01079263561");
+    eq("카카오URL", CFG.kakao, "https://pf.kakao.com/_xgMuaX/chat");
+    eq("상담시간 설정", CFG.hours, "24시간 (연중무휴)");
+    eq("상담시간 화면반영", $("hoursText").textContent.indexOf("24시간") > -1 && $("hoursText2").textContent.indexOf("24시간") > -1, true);
+    eq("필수요소-버튼3개", ["btnKakao","btnSms","btnCopy"].every(function(i){ return !!$(i); }), true);
+    eq("서비스4종", document.querySelectorAll("#svcGrid button").length, 4);
+    document.title = "SELFTEST " + out.filter(function(x){ return x.indexOf("FAIL") === 0; }).length + "fail/" + out.length + " | " + out.join(" || ");
+  }
+
+  function init(){
+    setMin();
+    loadDraft();
+    update();
+    iosInstallHint();
+    inAppHint();
+    if (/[?&]selftest=1/.test(location.search)) selftest();
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+
+})();
+</script>
+</body>
+</html>

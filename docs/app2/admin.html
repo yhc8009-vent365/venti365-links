@@ -544,7 +544,7 @@ footer{padding:22px 0 6px;text-align:center;font-size:12px;color:var(--muted);li
     </div>
 
     <footer>
-      벤티 365 관리자 · 문의 010-8622-0611<br>
+      벤티 365 관리자 · 문의 010-7926-3561<br>
       <span id="footNote"></span>
     </footer>
   </section>
@@ -560,9 +560,9 @@ footer{padding:22px 0 6px;text-align:center;font-size:12px;color:var(--muted);li
 
   /* ══════ 설정 ══════ */
   var CFG = {
-    phone: "01086220611",
-    phoneText: "010-8622-0611",
-    hours: "평일 13:00 ~ 익일 새벽 02:00",
+    phone: "01079263561",
+    phoneText: "010-7926-3561",
+    hours: "24시간 (연중무휴)",
     baseDeposit: 10000
   };
 
@@ -570,13 +570,13 @@ footer{padding:22px 0 6px;text-align:center;font-size:12px;color:var(--muted);li
   var DEFAULT_SHA = "ffdfe413f4bffa55dade61d0936a864fb9f6cc567e2b8dacabe9818b130ed8f1";
   var OB_PASS = "MzY1MzY1";                          // base64("365365") — 암호화 API 없는 환경 폴백
 
-  var K_PASS  = "venti365_admin_pass_v1";
-  var K_EXP   = "venti365_admin_exp_v1";
-  var K_LIST  = "venti365_dispatch_v1";
-  var K_DRV   = "venti365_drivers_v1";
-  var K_CAR   = "venti365_cars_v1";
-  var K_SYN   = "venti365_sheet_v1";     // {url, key} — 이 기기에만 저장
-  var K_SYNAT = "venti365_sheet_last_v1";
+  var K_PASS  = "venti7926_admin_pass_v1";
+  var K_EXP   = "venti7926_admin_exp_v1";
+  var K_LIST  = "venti7926_dispatch_v1";
+  var K_DRV   = "venti7926_drivers_v1";
+  var K_CAR   = "venti7926_cars_v1";
+  var K_SYN   = "venti7926_sheet_v1";     // {url, key} — 이 기기에만 저장
+  var K_SYNAT = "venti7926_sheet_last_v1";
 
   var DEF_CARS  = ["카니발", "스타리아", "벤츠 V클래스", "쏠라티"];
   var STATUSES  = ["접수", "확정", "운행중", "완료", "취소"];
@@ -667,7 +667,7 @@ footer{padding:22px 0 6px;text-align:center;font-size:12px;color:var(--muted);li
   }
   function unlocked(){
     // 브라우저를 닫으면 잠긴다. '30일 유지'를 켠 기기만 localStorage 만료를 본다.
-    if (ssGet("v365adm") === "1") return true;
+    if (ssGet("venti7926adm") === "1") return true;
     var exp = lsGet(K_EXP, 0);
     return !!exp && Number(exp) > Date.now();
   }
@@ -1626,7 +1626,7 @@ footer{padding:22px 0 6px;text-align:center;font-size:12px;color:var(--muted);li
 
   // 잠금
   function lock(){
-    ssDel("v365adm");
+    ssDel("venti7926adm");
     try { localStorage.removeItem(K_EXP); } catch(e){}
     $("app").classList.add("hidden");
     $("gate").classList.remove("hidden");
@@ -1646,7 +1646,7 @@ footer{padding:22px 0 6px;text-align:center;font-size:12px;color:var(--muted);li
         $("pw").value = ""; $("pw").focus();
         return;
       }
-      ssSet("v365adm", "1");
+      ssSet("venti7926adm", "1");
       try { localStorage.setItem(K_EXP, String(Date.now() + KEEP_DAYS * 86400000)); } catch(e){}
       openApp();
     });
@@ -1701,7 +1701,7 @@ footer{padding:22px 0 6px;text-align:center;font-size:12px;color:var(--muted);li
     eq("고객문-헤더", cm.split("\n")[0], "[벤티365 배차 확정 안내]");
     eq("고객문-접수번호", cm.indexOf("· 접수번호: V20261009-001") > -1, true);
     eq("고객문-잔금", cm.indexOf("· 잔금: 80,000원 (현장 결제)") > -1, true);
-    eq("고객문-문의", cm.indexOf("010-8622-0611") > -1, true);
+    eq("고객문-문의", cm.indexOf("010-7926-3561") > -1, true);
     eq("기사문-헤더", dm.split("\n")[0], "[벤티365 배차 지시]");
     eq("기사문-고객", dm.indexOf("· 고객: 홍길동 010-1234-5678") > -1, true);
     eq("기사문-특이", dm.indexOf("· 특이사항: 카시트 필요") > -1, true);
