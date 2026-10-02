@@ -1,6 +1,6 @@
 {
-  "name": "벤티 365 — 간편 예약",
-  "short_name": "벤티365",
+  "name": "SeoulVentiTaxi — 간편 예약",
+  "short_name": "SeoulVentiTaxi",
   "description": "공항 픽업·드랍, 골프장 왕복, 지방 출장 예약 접수. 정보 입력 후 문자로 바로 접수됩니다.",
   "lang": "ko",
   "dir": "ltr",

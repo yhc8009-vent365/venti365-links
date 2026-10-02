@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow,noarchive">
-<title>벤티 365 — 관리자 (배차)</title>
+<title>SeoulVentiTaxi — 관리자 (배차)</title>
 
 <meta name="theme-color" content="#191919">
 <link rel="icon" href="icons/favicon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="벤티365 관리자">
+<meta name="apple-mobile-web-app-title" content="SeoulVentiTaxi 관리자">
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -214,7 +214,7 @@ footer{padding:22px 0 6px;text-align:center;font-size:12px;color:var(--muted);li
 <div id="gate">
   <div class="box">
     <span class="mark"><svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;border-radius:16px"><rect width="512" height="512" rx="112" fill="#FEE500"/><path d="M136 104 L256 292 L376 104" fill="none" stroke="#191919" stroke-width="52" stroke-linecap="round" stroke-linejoin="round"/><text x="256" y="440" text-anchor="middle" font-family="'Helvetica Neue','Apple SD Gothic Neo',sans-serif" font-size="110" font-weight="800" fill="#191919" letter-spacing="1">365</text></svg></span>
-    <h1>벤티 365 · 관리자</h1>
+    <h1>SeoulVentiTaxi · 관리자</h1>
     <p>배차 관리 페이지입니다.<br>비밀번호를 입력해 주십시오.</p>
     <input type="password" id="pw" inputmode="numeric" autocomplete="current-password" placeholder="••••••" maxlength="32">
     <button type="button" id="pwGo">들어가기</button>
@@ -230,7 +230,7 @@ footer{padding:22px 0 6px;text-align:center;font-size:12px;color:var(--muted);li
   <div class="wrap">
     <div class="brand">
       <span class="mark" aria-hidden="true"><svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;border-radius:8px"><rect width="512" height="512" rx="112" fill="#FEE500"/><path d="M136 104 L256 292 L376 104" fill="none" stroke="#191919" stroke-width="52" stroke-linecap="round" stroke-linejoin="round"/><text x="256" y="440" text-anchor="middle" font-family="'Helvetica Neue','Apple SD Gothic Neo',sans-serif" font-size="110" font-weight="800" fill="#191919" letter-spacing="1">365</text></svg></span>
-      벤티 365 <small>관리자</small>
+      SeoulVentiTaxi <small>관리자</small>
     </div>
     <div class="spacer"></div>
     <button type="button" class="tbtn" id="btnLock">잠금</button>
@@ -254,7 +254,7 @@ footer{padding:22px 0 6px;text-align:center;font-size:12px;color:var(--muted);li
       <h2>📥 예약 문자 붙여넣기</h2>
       <p class="hint">고객이 보낸 예약 문자를 그대로 붙여넣으면 아래 배차 정보가 <b>자동으로 채워집니다.</b></p>
       <div class="pastebox">
-        <textarea id="pasteArea" placeholder="[벤티365 예약 요청]&#10;· 서비스: 공항 픽업&#10;· 예약자 성함: 홍길동&#10;· 연락처: 010-1234-5678&#10;· 탑승 날짜 및 시간: 2026.10.09(금) 07:00&#10;· 출발지: 서울 영등포구&#10;· 도착지: 인천공항 T1"></textarea>
+        <textarea id="pasteArea" placeholder="[SeoulVentiTaxi 예약 요청]&#10;· 서비스: 공항 픽업&#10;· 예약자 성함: 홍길동&#10;· 연락처: 010-1234-5678&#10;· 탑승 날짜 및 시간: 2026.10.09(금) 07:00&#10;· 출발지: 서울 영등포구&#10;· 도착지: 인천공항 T1"></textarea>
       </div>
       <div class="acts">
         <button type="button" class="btn btn-blue" id="btnParse">자동 입력</button>
@@ -544,7 +544,7 @@ footer{padding:22px 0 6px;text-align:center;font-size:12px;color:var(--muted);li
     </div>
 
     <footer>
-      벤티 365 관리자 · 문의 010-7926-3561<br>
+      SeoulVentiTaxi 관리자 · 문의 010-7926-3561<br>
       <span id="footNote"></span>
     </footer>
   </section>
@@ -889,7 +889,7 @@ footer{padding:22px 0 6px;text-align:center;font-size:12px;color:var(--muted);li
   function buildCustomer(d){
     var dp = depositInfo(d);
     var L = [];
-    L.push("[벤티365 배차 확정 안내]");
+    L.push("[SeoulVentiTaxi 배차 확정 안내]");
     L.push("");
     L.push((d.name || "고객") + " 고객님, 예약이 확정되었습니다.");
     L.push("");
@@ -905,14 +905,14 @@ footer{padding:22px 0 6px;text-align:center;font-size:12px;color:var(--muted);li
     L.push("");
     L.push("이용 당일 출발 전에 기사가 연락드립니다.");
     L.push("문의: " + CFG.phoneText + " (" + CFG.hours + ")");
-    L.push("벤티365 — 카카오 T 벤티 예약 접수");
+    L.push("SeoulVentiTaxi — 카카오 T 벤티 예약 접수");
     return L.join("\n");
   }
 
   function buildDriver(d){
     var dp = depositInfo(d);
     var L = [];
-    L.push("[벤티365 배차 지시]");
+    L.push("[SeoulVentiTaxi 배차 지시]");
     if (d.id)      L.push("· 접수번호: " + d.id);
     L.push("· 탑승 일시: " + fmtWhen(d.when));
     L.push("· 서비스: " + (d.svc || "-"));
@@ -1390,7 +1390,7 @@ footer{padding:22px 0 6px;text-align:center;font-size:12px;color:var(--muted);li
         Number(r.fare) || 0, dp.label, dp.balance, r.memo
       ].map(csvCell).join(","));
     });
-    var name = "벤티365_배차_" + ymd(new Date().toISOString()) + ".csv";
+    var name = "SeoulVentiTaxi_배차_" + ymd(new Date().toISOString()) + ".csv";
     if (download(name, "\ufeff" + out.join("\r\n"), "text/csv;charset=utf-8")) toast("CSV 내보내기 완료 — " + name);
     else toast("내보내기에 실패했습니다.");
   });
@@ -1405,7 +1405,7 @@ footer{padding:22px 0 6px;text-align:center;font-size:12px;color:var(--muted);li
       drivers: lsGet(K_DRV, []),
       cars: lsGet(K_CAR, DEF_CARS)
     };
-    var name = "벤티365_배차백업_" + ymd(new Date().toISOString()) + ".json";
+    var name = "SeoulVentiTaxi_배차백업_" + ymd(new Date().toISOString()) + ".json";
     if (download(name, JSON.stringify(payload, null, 2), "application/json")) toast("백업 완료 — " + name);
     else toast("백업에 실패했습니다.");
   });
@@ -1674,7 +1674,7 @@ footer{padding:22px 0 6px;text-align:center;font-size:12px;color:var(--muted);li
     eq("요금 포맷", fmtFare(90000), "90,000원");
     eq("접수번호 접두", ymd("2026-10-09T07:00"), "20261009");
 
-    var p1 = parseReservation("[벤티365 예약 요청]\n· 서비스: 공항 픽업\n· 예약자 성함: 홍길동\n· 연락처: 010-1234-5678\n" +
+    var p1 = parseReservation("[SeoulVentiTaxi 예약 요청]\n· 서비스: 공항 픽업\n· 예약자 성함: 홍길동\n· 연락처: 010-1234-5678\n" +
                               "· 탑승 날짜 및 시간: 2026.10.09(금) 07:00\n· 출발지: 서울 영등포구\n· 도착지: 인천공항 T1\n" +
                               "· 탑승 인원: 4명\n· 수하물 수량(캐리어, 골프백 등): 캐리어 2\n· 요청 사항: 카시트 필요");
     eq("파서-성함", p1.data.name, "홍길동");
@@ -1698,11 +1698,11 @@ footer{padding:22px 0 6px;text-align:center;font-size:12px;color:var(--muted);li
                 fare:90000, deposit:10000, status:"확정", memo:"카시트 필요" };
     var cm = buildCustomer(rec);
     var dm = buildDriver(rec);
-    eq("고객문-헤더", cm.split("\n")[0], "[벤티365 배차 확정 안내]");
+    eq("고객문-헤더", cm.split("\n")[0], "[SeoulVentiTaxi 배차 확정 안내]");
     eq("고객문-접수번호", cm.indexOf("· 접수번호: V20261009-001") > -1, true);
     eq("고객문-잔금", cm.indexOf("· 잔금: 80,000원 (현장 결제)") > -1, true);
     eq("고객문-문의", cm.indexOf("010-7926-3561") > -1, true);
-    eq("기사문-헤더", dm.split("\n")[0], "[벤티365 배차 지시]");
+    eq("기사문-헤더", dm.split("\n")[0], "[SeoulVentiTaxi 배차 지시]");
     eq("기사문-고객", dm.indexOf("· 고객: 홍길동 010-1234-5678") > -1, true);
     eq("기사문-특이", dm.indexOf("· 특이사항: 카시트 필요") > -1, true);
 

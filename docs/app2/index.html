@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>벤티 365 — 간편 예약</title>
+<title>SeoulVentiTaxi — 간편 예약</title>
 
 <meta name="theme-color" content="#FEE500">
-<meta name="description" content="공항 픽업·드랍, 골프장 왕복, 지방 출장 — 벤티 365 카카오 T 벤티 예약 접수. 성함·연락처·일시·출발/도착지만 입력하면 문자로 바로 접수됩니다.">
-<meta property="og:title" content="벤티 365 — 간편 예약">
+<meta name="description" content="공항 픽업·드랍, 골프장 왕복, 지방 출장 — SeoulVentiTaxi 카카오 T 벤티 예약 접수. 성함·연락처·일시·출발/도착지만 입력하면 문자로 바로 접수됩니다.">
+<meta property="og:title" content="SeoulVentiTaxi — 간편 예약">
 <meta property="og:description" content="공항 픽업·골프·지방출장 예약을 1분 안에 접수합니다.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://yhc8009-vent365.github.io/venti365-links/og-image.png">
@@ -21,7 +21,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="벤티365">
+<meta name="apple-mobile-web-app-title" content="SeoulVentiTaxi">
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -220,7 +220,7 @@ footer .biz{margin-top:6px;font-size:12px;color:#9AA3AD}
 
 <header class="topbar">
   <div class="wrap">
-    <div class="brand"><span class="mark" aria-hidden="true"><svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><rect width="512" height="512" rx="112" fill="#191919"/><path d="M136 104 L256 292 L376 104" fill="none" stroke="#FEE500" stroke-width="52" stroke-linecap="round" stroke-linejoin="round"/><text x="256" y="440" text-anchor="middle" font-family="'Helvetica Neue','Apple SD Gothic Neo',sans-serif" font-size="110" font-weight="800" fill="#FEE500" letter-spacing="1">365</text></svg></span>벤티 365</div>
+    <div class="brand"><span class="mark" aria-hidden="true"><svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><rect width="512" height="512" rx="112" fill="#191919"/><path d="M136 104 L256 292 L376 104" fill="none" stroke="#FEE500" stroke-width="52" stroke-linecap="round" stroke-linejoin="round"/><text x="256" y="440" text-anchor="middle" font-family="'Helvetica Neue','Apple SD Gothic Neo',sans-serif" font-size="110" font-weight="800" fill="#FEE500" letter-spacing="1">365</text></svg></span>SeoulVentiTaxi</div>
     <div class="spacer"></div>
     <a class="iconbtn" href="tel:01079263561">📞 전화</a>
   </div>
@@ -362,7 +362,7 @@ footer .biz{margin-top:6px;font-size:12px;color:#9AA3AD}
   </section>
 
   <footer>
-    <div>벤티 365 · 카카오 T 벤티 예약 접수</div>
+    <div>SeoulVentiTaxi · 카카오 T 벤티 예약 접수</div>
     <div class="biz" id="bizLine">문의 010-7926-3561</div>
   </footer>
 </main>
@@ -482,7 +482,7 @@ footer .biz{margin-top:6px;font-size:12px;color:#9AA3AD}
   /* ── 메시지 생성 (블로그 「문자 남겨주실 양식」과 동일한 항목 순서) ── */
   function buildMessage(d){
     var L = [];
-    L.push("[벤티365 예약 요청]");
+    L.push("[SeoulVentiTaxi 예약 요청]");
     L.push("· 서비스: " + d.svc);
     L.push("· 예약자 성함: " + d.name);
     L.push("· 연락처: " + d.phone);
@@ -704,7 +704,7 @@ footer .biz{margin-top:6px;font-size:12px;color:#9AA3AD}
     var d = {svc:"공항 픽업", name:"홍길동", phone:"010-1234-5678", when:"2027-01-05T14:30",
              from:"서울 영등포구", to:"인천공항 T1", pax:"4명", bag:"캐리어 2", memo:"카시트 필요", agree:true};
     var m = buildMessage(d);
-    eq("메시지 헤더", m.split("\n")[0], "[벤티365 예약 요청]");
+    eq("메시지 헤더", m.split("\n")[0], "[SeoulVentiTaxi 예약 요청]");
     eq("서비스 반영", m.indexOf("· 서비스: 공항 픽업") > -1, true);
     eq("일시 포맷", m.indexOf("· 탑승 날짜 및 시간: 2027.01.05(화) 14:30") > -1, true);
     eq("요청 반영", m.indexOf("· 요청 사항: 카시트 필요") > -1, true);
