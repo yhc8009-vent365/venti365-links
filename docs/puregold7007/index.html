@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>종로금방 — 금 매입·판매 상담</title>
+
+<meta name="theme-color" content="#1A1610">
+<meta name="description" content="종로금방 — 골드바·목걸이·반지·금수저 등 금 매입·판매 상담을 문자로 1분 안에 접수합니다. 성함·연락처·품목만 입력하면 문자로 바로 접수됩니다.">
+<meta property="og:title" content="종로금방 — 금 매입·판매 상담">
+<meta property="og:description" content="금 매입·판매 상담을 1분 안에 문자로 접수합니다.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="종로금방">
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --gold:#D4AF37; --gold-l:#F5D76E; --gold-d:#A67C00; --gold-soft:#FBF6E4;
+  --ink:#1A1610; --sub:#5B5346; --muted:#8B8375;
+  --bg:#F4F1EA; --card:#FFFFFF; --line:#E6E0D2;
+  --green:#00A86B; --red:#D93A32;
+  --r:16px; --r-sm:12px;
+  --safe-b:env(safe-area-inset-bottom,0px);
+}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;
+  font-size:16px; line-height:1.55; letter-spacing:-.01em;
+  -webkit-font-smoothing:antialiased; padding-bottom:calc(84px + var(--safe-b));
+}
+img{display:block;max-width:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+.wrap{max-width:560px;margin:0 auto;padding:0 16px}
+
+/* ── 상단바 ── */
+.topbar{
+  position:sticky;top:0;z-index:40;
+  background:linear-gradient(135deg,#241E15,#12100C);
+  padding:calc(12px + env(safe-area-inset-top,0px)) 0 12px;
+  box-shadow:0 1px 0 rgba(0,0,0,.25);
+}
+.topbar .wrap{display:flex;align-items:center;gap:10px}
+.brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:19px;letter-spacing:-.03em;color:#fff}
+.brand .mark{width:34px;height:34px;flex:none;display:block}
+.brand .mark svg{width:100%;height:100%;display:block;border-radius:10px}
+.brand .sub{display:block;font-size:10.5px;font-weight:600;color:var(--gold);letter-spacing:.14em;margin-top:1px}
+.topbar .spacer{flex:1}
+.iconbtn{
+  display:flex;align-items:center;gap:6px;background:rgba(212,175,55,.18);
+  border:1px solid rgba(212,175,55,.45);color:var(--gold-l);
+  border-radius:999px;padding:8px 13px;font-size:13.5px;font-weight:700
+}
+.iconbtn:active{transform:scale(.97)}
+
+/* ── 인트로 ── */
+.hero{padding:20px 0 4px}
+.hero h1{font-size:22px;font-weight:800;letter-spacing:-.04em;line-height:1.35}
+.hero h1 em{font-style:normal;background:linear-gradient(transparent 58%,#F3E3A8 58%)}
+.hero p{color:var(--sub);font-size:14.5px;margin-top:8px}
+.hours{
+  display:inline-flex;align-items:center;gap:7px;margin-top:12px;
+  background:#fff;border:1px solid var(--line);border-radius:999px;
+  padding:8px 14px;font-size:13.5px;color:var(--sub);font-weight:600
+}
+.hours b{color:var(--ink)}
+
+/* ── 카드 ── */
+.card{background:var(--card);border-radius:var(--r);padding:18px;margin-top:14px}
+.card>h2{font-size:16px;font-weight:800;letter-spacing:-.03em;margin-bottom:2px;display:flex;align-items:center}
+.card>.hint{font-size:13px;color:var(--muted);margin-bottom:14px}
+.step{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:20px;height:20px;border-radius:50%;background:var(--ink);color:var(--gold);
+  font-size:12px;font-weight:800;margin-right:7px;flex:none
+}
+
+/* ── 상담 유형 선택 ── */
+.svc{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.svc button{
+  background:#fff;border:1.5px solid var(--line);border-radius:var(--r-sm);
+  padding:15px 8px;text-align:center;transition:border-color .15s,background .15s
+}
+.svc .ico{font-size:26px;line-height:1.1;margin-bottom:6px}
+.svc .nm{font-size:14.5px;font-weight:700;color:var(--sub)}
+.svc button[aria-pressed="true"]{border-color:var(--gold-d);background:var(--gold-soft)}
+.svc button[aria-pressed="true"] .nm{color:var(--ink)}
+
+/* ── 입력 ── */
+.fld{margin-bottom:14px}
+.fld:last-of-type{margin-bottom:0}
+.fld label{display:block;font-size:13.5px;font-weight:700;color:var(--sub);margin-bottom:7px}
+.fld label .req{color:var(--red);margin-left:2px}
+.fld input,.fld textarea,.fld select{
+  width:100%;background:#FBFAF6;border:1px solid var(--line);border-radius:var(--r-sm);
+  padding:14px 14px;font-size:16px;
+}
+.fld textarea{min-height:74px;resize:vertical;line-height:1.5}
+.fld input::placeholder,.fld textarea::placeholder{color:#B9B2A4}
+.fld input:focus,.fld textarea:focus,.fld select:focus{outline:none;border-color:var(--gold);background:#fff}
+.fld.bad input,.fld.bad textarea{border-color:var(--red);background:#FFF6F5}
+.err{display:none;color:var(--red);font-size:12.5px;margin-top:6px;font-weight:600}
+.fld.bad .err{display:block}
+.fld .tip{font-size:12px;color:var(--muted);margin-top:6px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* ── 동의 ── */
+.agree{display:flex;gap:10px;align-items:flex-start;background:#FBFAF6;border:1px solid var(--line);border-radius:var(--r-sm);padding:13px;margin-top:16px}
+.agree.bad{border-color:var(--red);background:#FFF6F5}
+.agree input{width:20px;height:20px;flex:none;margin-top:2px;accent-color:var(--gold-d)}
+.agree .tx{font-size:12.5px;color:var(--sub);line-height:1.55}
+.agree .tx b{color:var(--ink)}
+
+/* ── 접수 미리보기 ── */
+.sum{background:#12100C;border-radius:var(--r-sm);padding:15px;margin-bottom:14px}
+.sum h3{color:var(--gold);font-size:12.5px;font-weight:700;letter-spacing:.06em;margin-bottom:9px}
+.sum pre{color:#EDE7DA;font-size:13.5px;line-height:1.75;white-space:pre-wrap;word-break:break-word;font-family:inherit}
+
+/* ── 버튼 ── */
+.acts{display:grid;gap:10px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;border-radius:var(--r-sm);padding:16px;font-size:16px;font-weight:800;letter-spacing:-.02em}
+.btn:active{transform:scale(.99)}
+.btn-sms{background:linear-gradient(135deg,#E8C860,#C9A227);color:#1A1610;box-shadow:0 3px 0 #8E6E12}
+.btn-sms .tag{background:rgba(26,22,16,.18);border-radius:999px;padding:2px 9px;font-size:11.5px;font-weight:800}
+.btn-ghost{background:#fff;border:1.5px solid var(--line);color:var(--sub);font-weight:700}
+.btn-tel{background:#12100C;color:var(--gold-l)}
+
+.warnline{font-size:12.5px;color:var(--muted);line-height:1.65;margin-top:12px}
+.warnline b{color:var(--sub)}
+
+/* ── 안내 ── */
+.guide{display:grid;gap:11px}
+.gi{display:flex;gap:10px;font-size:13.5px;align-items:flex-start}
+.gk{flex:none;width:88px;color:var(--muted);font-weight:700;font-size:12.5px;padding-top:1px}
+.gv{color:var(--sub);flex:1}
+.gv b{color:var(--ink)}
+.note{background:var(--gold-soft);border-radius:var(--r-sm);padding:13px;font-size:13.5px;color:#5B4A16;line-height:1.7}
+.note b{color:#3D3109}
+
+/* ── 설치 안내 ── */
+.install{background:#12100C;color:#EDE7DA;border-radius:var(--r);padding:17px;margin-top:14px}
+.install .t{font-size:14.5px;font-weight:800;color:var(--gold-l)}
+.install .d{font-size:12.5px;color:#B9B2A4;margin-top:5px;line-height:1.6}
+.install .row{display:flex;gap:9px;margin-top:13px}
+.install .go{flex:1;background:var(--gold);color:#1A1610;border-radius:10px;padding:12px;font-weight:800;font-size:14px}
+.install .no{background:transparent;border:1px solid #4A4235;color:#B9B2A4;border-radius:10px;padding:12px 16px;font-size:14px}
+
+footer{padding:26px 0 10px;text-align:center;color:var(--muted);font-size:12px;line-height:1.8}
+footer .biz{font-size:11.5px;color:#A9A294;margin-top:3px}
+
+/* ── 하단 고정바 ── */
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(18,16,12,.97);backdrop-filter:blur(10px);border-top:1px solid #2C2618;padding:10px 0 calc(10px + var(--safe-b))}
+.dock .in{max-width:560px;margin:0 auto;padding:0 16px;display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.dock a{display:flex;align-items:center;justify-content:center;gap:7px;border-radius:11px;padding:14px;font-weight:800;font-size:14.5px;text-decoration:none}
+.dock .k{background:linear-gradient(135deg,#E8C860,#C9A227);color:#1A1610}
+.dock .t{background:#241E15;color:var(--gold-l);border:1px solid #3D3524}
+
+/* ── 토스트 ── */
+.toast{position:fixed;left:50%;bottom:calc(96px + var(--safe-b));transform:translateX(-50%) translateY(14px);background:#12100C;color:#fff;padding:13px 20px;border-radius:999px;font-size:13.5px;font-weight:700;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:60;max-width:88vw;text-align:center}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<!-- 상단바 -->
+<header class="topbar">
+  <div class="wrap">
+    <div class="brand">
+      <span class="mark" id="logoSvg"></span>
+      <span>종로금방<span class="sub">PURE GOLD 7007</span></span>
+    </div>
+    <span class="spacer"></span>
+    <a class="iconbtn" href="tel:01077062952">📞 전화</a>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- 인트로 -->
+  <section class="hero">
+    <h1>금 매입·판매 상담을<br><em>1분 안에</em> 문자로 접수하세요</h1>
+    <p>골드바·목걸이·반지·금수저 등 어떤 금이든, 품목과 수량만 입력하면 문자로 바로 접수됩니다.</p>
+    <span class="hours">📍 서울 종로 귀금속거리 · <b>종묘귀금속백화점</b></span>
+  </section>
+
+  <!-- ① 상담 유형 -->
+  <section class="card">
+    <h2><span class="step">1</span>상담 유형 선택</h2>
+    <p class="hint">어떤 상담을 원하시나요?</p>
+    <div class="svc" id="svcGrid">
+      <button type="button" aria-pressed="true"  data-svc="금 매입 상담"><div class="ico">💰</div><div class="nm">금 매입 상담</div></button>
+      <button type="button" aria-pressed="false" data-svc="금 판매 상담"><div class="ico">🛒</div><div class="nm">금 판매 상담</div></button>
+      <button type="button" aria-pressed="false" data-svc="골드바 상담"><div class="ico">🧱</div><div class="nm">골드바 상담</div></button>
+      <button type="button" aria-pressed="false" data-svc="기타 문의"><div class="ico">💬</div><div class="nm">기타 문의</div></button>
+    </div>
+  </section>
+
+  <!-- ② 상담 정보 -->
+  <section class="card">
+    <h2><span class="step">2</span>상담 정보 입력</h2>
+    <p class="hint"><span style="color:#D93A32">*</span> 표시는 필수 항목입니다.</p>
+
+    <div class="fld" id="f-name">
+      <label for="name">성함<span class="req">*</span></label>
+      <input type="text" id="name" autocomplete="name" placeholder="예: 홍길동" maxlength="20">
+      <div class="err">성함을 입력해 주세요.</div>
+    </div>
+
+    <div class="fld" id="f-phone">
+      <label for="phone">연락처<span class="req">*</span></label>
+      <input type="tel" id="phone" inputmode="numeric" autocomplete="tel" placeholder="010-1234-5678" maxlength="13">
+      <div class="err">휴대폰 번호 11자리를 정확히 입력해 주세요.</div>
+    </div>
+
+    <div class="fld" id="f-item">
+      <label for="item">품목<span class="req">*</span></label>
+      <select id="item">
+        <option value="">품목을 선택해 주세요</option>
+        <option>골드바</option>
+        <option>목걸이</option>
+        <option>반지</option>
+        <option>귀걸이·피어싱</option>
+        <option>팔찌·발찌</option>
+        <option>금수저·돌반지</option>
+        <option>금 시계</option>
+        <option>기타 금제품</option>
+      </select>
+      <div class="err">품목을 선택해 주세요.</div>
+    </div>
+
+    <div class="row2">
+      <div class="fld">
+        <label for="qty">수량(개수)</label>
+        <input type="text" id="qty" inputmode="numeric" placeholder="예: 2개" maxlength="10">
+      </div>
+      <div class="fld">
+        <label for="weight">대략 무게</label>
+        <input type="text" id="weight" placeholder="예: 10g, 3돈" maxlength="20">
+      </div>
+    </div>
+
+    <div class="fld">
+      <label for="visit">방문 희망일 (선택)</label>
+      <input type="date" id="visit">
+      <div class="tip">방문 상담을 원하시면 날짜를 선택해 주세요.</div>
+    </div>
+
+    <div class="fld">
+      <label for="memo">문의 내용</label>
+      <textarea id="memo" placeholder="예: 18K 목걸이 2개 매입 시세 문의 / 오후 방문 희망" maxlength="200"></textarea>
+    </div>
+
+    <label class="agree" id="agreeBox" for="agree">
+      <input type="checkbox" id="agree">
+      <span class="tx"><b>[필수]</b> 상담 접수 목적의 <b>성함·연락처 수집 및 이용</b>에 동의합니다. 수집 항목: 성함, 연락처 / 이용 목적: 상담 확인 및 연락 / 보유 기간: 업무 완료 후 파기. 동의를 거부하실 수 있으나, 거부 시 상담 접수가 어렵습니다.</span>
+    </label>
+  </section>
+
+  <!-- ③ 접수 -->
+  <section class="card">
+    <h2><span class="step">3</span>접수 내용 확인 후 전송</h2>
+    <p class="hint">전송 전에 아래 내용을 확인해 주세요.</p>
+
+    <div class="sum">
+      <h3>접수될 내용</h3>
+      <pre id="preview">위 정보를 입력하시면 접수 내용이 여기에 표시됩니다.</pre>
+    </div>
+
+    <div class="acts">
+      <button type="button" class="btn btn-sms" id="btnSms">✉️ 문자로 접수하기 <span class="tag">가장 빠름</span></button>
+      <button type="button" class="btn btn-ghost" id="btnCopy">접수 내용 복사만 하기</button>
+    </div>
+
+    <p class="warnline">
+      · 앱이 자동으로 보내지는 않습니다. 버튼을 누르면 <b>문자 앱</b>이 열립니다.<br>
+      · 내용이 문자창에 채워집니다. <b>전송 버튼만</b> 누르면 접수됩니다.<br>
+      · 붙여넣기가 필요하면 <b>복사만 하기</b>를 누르고 원하는 곳에 붙여넣으세요.
+    </p>
+  </section>
+
+  <!-- 상담 안내 -->
+  <section class="card">
+    <h2>📌 상담 안내</h2>
+    <p class="hint">방문 전에 확인해 주세요.</p>
+    <div class="guide">
+      <div class="gi"><span class="gk">매장 위치</span><span class="gv">서울특별시 종로구 종로 173 <b>종묘귀금속백화점</b></span></div>
+      <div class="gi"><span class="gk">상담 항목</span><span class="gv">금 매입·판매, 골드바, 돌반지·금수저 등 <b>모든 금제품</b></span></div>
+      <div class="gi"><span class="gk">시세 안내</span><span class="gv">금 시세는 <b>매일 변동</b>됩니다. 방문 당일 시세로 안내드립니다.</span></div>
+      <div class="gi"><span class="gk">방문 전</span><span class="gv">문자로 먼저 접수하시면 대기 없이 상담받으실 수 있습니다.</span></div>
+    </div>
+  </section>
+
+  <!-- 시세 안내 -->
+  <section class="card">
+    <h2>💡 금 매입 시 알아두세요</h2>
+    <div class="note">
+      <b>1.</b> 금 매입가는 <b>국제 금 시세</b>와 <b>함량(24K·18K·14K)</b>에 따라 달라집니다.<br>
+      <b>2.</b> 방문 시 <b>신분증</b>을 지참하시면 절차가 빠릅니다.<br>
+      <b>3.</b> 시세는 매일 바뀌므로 <b>방문 전 전화로 확인</b>하시면 정확합니다.
+    </div>
+  </section>
+
+  <!-- 설치 안내 -->
+  <section class="install" id="installBox">
+    <div class="t">📲 홈 화면에 추가하면 앱처럼 씁니다</div>
+    <div class="d" id="installDesc">아이콘을 누르면 전체화면으로 열리고, 인터넷이 끊겨도 화면이 뜹니다.</div>
+    <div class="row">
+      <button type="button" class="go" id="installGo">홈 화면에 추가</button>
+      <button type="button" class="no" id="installNo">나중에</button>
+    </div>
+  </section>
+
+  <footer>
+    <div>종로금방 · 금 매입·판매 상담 접수</div>
+    <div class="biz" id="bizLine">문의 010-7706-2952 · 서울 종로구 종로 173 종묘귀금속백화점</div>
+  </footer>
+</main>
+
+<!-- 하단 고정바 -->
+<nav class="dock">
+  <div class="in">
+    <a class="k" href="#top" id="dockSms">✉️ 문자로 접수</a>
+    <a class="t" href="tel:01077062952">📞 전화 상담</a>
+  </div>
+</nav>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ── 설정 ── */
+  var CFG = {
+    phone: "01077062952",              // 접수 받을 번호 (하이픈 없이)
+    phoneText: "010-7706-2952",
+    place: "서울특별시 종로구 종로 173 종묘귀금속백화점",
+    bizLine: "문의 010-7706-2952 · 서울 종로구 종로 173 종묘귀속백화점",
+    brand: "종로금방"
+  };
+
+  /* 로고 (인라인 SVG — 외부 요청 없음) */
+  (function(){
+    var el = document.getElementById("logoSvg");
+    if (!el) return;
+    el.innerHTML =
+      '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">' +
+      '<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0" stop-color="#F5D76E"/><stop offset="1" stop-color="#C9A227"/></linearGradient></defs>' +
+      '<rect width="64" height="64" rx="14" fill="#12100C"/>' +
+      '<rect x="3" y="3" width="58" height="58" rx="12" fill="none" stroke="#8E6E12" stroke-width="2"/>' +
+      '<path d="M18 27 L15 19 L49 19 L46 27 Z" fill="#F5D76E"/>' +
+      '<path d="M13 40 L18 27 L46 27 L51 40 Z" fill="url(#g)"/>' +
+      '<text x="32" y="56" font-size="11" font-weight="bold" fill="#D4AF37" text-anchor="middle" font-family="sans-serif">7007</text>' +
+      '</svg>';
+  })();
+
+  var $ = function(id){ return document.getElementById(id); };
+  var svc = "금 매입 상담";
+
+  function pad(n){ return (n < 10 ? "0" : "") + n; }
+
+  function fmtPhone(v){
+    var d = String(v || "").replace(/\D/g, "").slice(0, 11);
+    if (d.length < 4) return d;
+    if (d.length < 8) return d.slice(0,3) + "-" + d.slice(3);
+    if (d.length < 11) return d.slice(0,3) + "-" + d.slice(3, d.length - 4) + "-" + d.slice(d.length - 4);
+    return d.slice(0,3) + "-" + d.slice(3,7) + "-" + d.slice(7);
+  }
+
+  function fmtDate(v){
+    if (!v) return "";
+    var p = v.split("-");
+    if (p.length !== 3) return v;
+    var w = ["일","월","화","수","목","금","토"];
+    var dt = new Date(+p[0], +p[1]-1, +p[2]);
+    var day = isNaN(dt.getTime()) ? "" : "(" + w[dt.getDay()] + ")";
+    return p[0] + "." + p[1] + "." + p[2] + day;
+  }
+
+  /* ── 상담 유형 ── */
+  var svcBtns = Array.prototype.slice.call(document.querySelectorAll("#svcGrid button"));
+  svcBtns.forEach(function(b){
+    b.addEventListener("click", function(){
+      svc = b.dataset.svc;
+      svcBtns.forEach(function(o){ o.setAttribute("aria-pressed", String(o === b)); });
+      update();
+    });
+  });
+
+  /* ── 입력 ── */
+  var FIELDS = ["name","phone","item","qty","weight","visit","memo"];
+  var phoneEl = $("phone");
+  phoneEl.addEventListener("input", function(){
+    var atEnd = phoneEl.selectionStart === phoneEl.value.length;
+    phoneEl.value = fmtPhone(phoneEl.value);
+    if (atEnd) { try { phoneEl.setSelectionRange(phoneEl.value.length, phoneEl.value.length); } catch(e){} }
+    update();
+  });
+  FIELDS.forEach(function(k){
+    if (k === "phone") return;
+    var el = $(k);
+    el.addEventListener("input", update);
+    el.addEventListener("change", update);
+  });
+  $("agree").addEventListener("change", function(){ $("agreeBox").classList.remove("bad"); update(); });
+
+  /* ── 수집 / 검증 ── */
+  function val(k){ return ($(k).value || "").trim(); }
+
+  function collect(){
+    return {
+      svc: svc, name: val("name"), phone: val("phone"), item: val("item"),
+      qty: val("qty"), weight: val("weight"), visit: val("visit"),
+      memo: val("memo"), agree: $("agree").checked
+    };
+  }
+
+  function errors(d){
+    var e = {};
+    if (d.name.length < 2) e.name = true;
+    if (d.phone.replace(/\D/g,"").length !== 11) e.phone = true;
+    if (!d.item) e.item = true;
+    return e;
+  }
+
+  function markErrors(e){
+    ["name","phone","item"].forEach(function(k){
+      $("f-" + k).classList.toggle("bad", !!e[k]);
+    });
+  }
+
+  /* ── 메시지 (블로그 안내문 항목 순서와 동일) ── */
+  function buildMessage(d){
+    var L = [];
+    L.push("[종로금방 상담 요청]");
+    L.push("· 상담 유형: " + d.svc);
+    L.push("· 성함: " + d.name);
+    L.push("· 연락처: " + d.phone);
+    L.push("· 품목: " + d.item);
+    L.push("· 수량: " + (d.qty || "미입력"));
+    L.push("· 대략 무게: " + (d.weight || "미입력"));
+    if (d.visit) L.push("· 방문 희망일: " + fmtDate(d.visit));
+    if (d.memo) L.push("· 문의 내용: " + d.memo);
+    L.push("");
+    L.push("→ 방문 가능 시간과 대략 시세 안내 부탁드립니다.");
+    return L.join("\n");
+  }
+
+  /* ── 미리보기 ── */
+  function update(){
+    var d = collect();
+    var filled = d.name || d.phone || d.item || d.memo;
+    $("preview").textContent = filled
+      ? buildMessage(d)
+      : "위 정보를 입력하시면 접수 내용이 여기에 표시됩니다.";
+
+    var e = errors(d);
+    ["name","phone","item"].forEach(function(k){
+      var box = $("f-" + k);
+      if (box.classList.contains("bad") && !e[k]) box.classList.remove("bad");
+    });
+  }
+
+  /* ── 토스트 ── */
+  var toastTimer = null;
+  function toast(msg){
+    var t = $("toast");
+    t.textContent = msg;
+    t.classList.add("on");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ t.classList.remove("on"); }, 2800);
+  }
+
+  /* ── 검증 후 실행 ── */
+  function guard(){
+    var d = collect(), e = errors(d);
+    markErrors(e);
+    var keys = Object.keys(e);
+    if (keys.length) {
+      var el = $("f-" + keys[0]);
+      el.scrollIntoView({behavior:"smooth", block:"center"});
+      toast("입력하지 않았거나 형식이 맞지 않는 항목이 있습니다.");
+      return null;
+    }
+    if (!d.agree) {
+      $("agreeBox").classList.add("bad");
+      $("agreeBox").scrollIntoView({behavior:"smooth", block:"center"});
+      toast("개인정보 수집·이용 동의가 필요합니다.");
+      return null;
+    }
+    return d;
+  }
+
+  /* ── 문자로 접수 ── */
+  function sendSms(){
+    var d = guard();
+    if (!d) return;
+    var body = encodeURIComponent(buildMessage(d));
+    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    window.location.href = "sms:" + CFG.phone + (isIOS ? "&body=" : "?body=") + body;
+    toast("문자 앱이 열립니다. 그대로 전송해 주세요.");
+  }
+
+  $("btnSms").addEventListener("click", sendSms);
+
+  /* 하단바 '문자로 접수' → 입력 검증 후 접수 */
+  $("dockSms").addEventListener("click", function(ev){
+    ev.preventDefault();
+    sendSms();
+  });
+
+  /* ── 복사 ── */
+  function copySync(t){
+    try {
+      var ta = document.createElement("textarea");
+      ta.value = t;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.top = "0"; ta.style.left = "0";
+      ta.style.width = "1px"; ta.style.height = "1px"; ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.focus(); ta.select();
+      try { ta.setSelectionRange(0, t.length); } catch(e){}
+      var ok = false;
+      try { ok = document.execCommand("copy"); } catch(e){ ok = false; }
+      document.body.removeChild(ta);
+      return ok;
+    } catch (err) { return false; }
+  }
+
+  function copyText(t){
+    if (copySync(t)) return Promise.resolve(true);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(t).then(function(){ return true; });
+    }
+    return Promise.reject(new Error("copy failed"));
+  }
+
+  $("btnCopy").addEventListener("click", function(){
+    var d = guard();
+    if (!d) return;
+    var txt = buildMessage(d);
+    copyText(txt).then(function(){
+      toast("접수 내용이 복사되었습니다. 문자·메모에 붙여넣으세요.");
+    }).catch(function(){
+      toast("복사에 실패했습니다. 내용을 길게 눌러 직접 복사해 주세요.");
+    });
+  });
+
+  /* ── PWA 설치 ── */
+  var deferred = null;
+  var installBox = $("installBox");
+
+  window.addEventListener("beforeinstallprompt", function(e){
+    e.preventDefault();
+    deferred = e;
+  });
+
+  if (window.matchMedia("(display-mode: standalone)").matches ||
+      window.navigator.standalone === true) {
+    installBox.style.display = "none";
+  }
+
+  var isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  if (isiOS) {
+    $("installDesc").innerHTML = 'Safari 하단 <b>공유 버튼</b> → <b>홈 화면에 추가</b>를 누르면 앱처럼 씁니다.';
+  }
+
+  $("installGo").addEventListener("click", function(){
+    if (deferred) {
+      deferred.prompt();
+      deferred.userChoice.then(function(){ deferred = null; });
+      return;
+    }
+    if (isiOS) {
+      toast("Safari 공유 버튼 → 홈 화면에 추가를 눌러주세요.");
+    } else {
+      toast("브라우저 메뉴 → 홈 화면에 추가를 눌러주세요.");
+    }
+  });
+
+  $("installNo").addEventListener("click", function(){
+    installBox.style.display = "none";
+  });
+
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function(){
+      navigator.serviceWorker.register("sw.js").catch(function(){});
+    });
+  }
+
+  update();
+})();
+</script>
+</body>
+</html>
