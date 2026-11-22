@@ -9,7 +9,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111214'/%3E%3Ctext x='32' y='44' font-family='Helvetica,Arial' font-size='34' font-weight='bold' fill='%23FFD23F' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
-<title>소켄 SOKEN — 어르신 이동 예약</title>
+<title>소켄 SOKEN — 시니어 프라이빗 케어</title>
 <style>
 :root{
   --bg:#0B0B0D; --bg2:#121215; --panel:#16171A; --panel2:#1C1D22;
@@ -164,13 +164,13 @@ nav span{font-size:9.5px;font-weight:700;letter-spacing:.02em}
 <body>
 <div class="app">
   <header>
-    <div class="logo">SO<i>KEN</i><small>소켄 · 시니어 이동</small></div>
+    <div class="logo">SO<i>KEN</i><small>소켄 · 프라이빗 케어</small></div>
     <a class="tel" href="tel:010-8622-0611">상담 010-8622-0611</a>
   </header>
 
   <section class="view on" id="v-book">
-    <h1>어르신 이동 예약</h1>
-    <p class="sub">보호자가 대신 예약합니다. 서울 시내와 지방 이동 모두 가능합니다.</p>
+    <h1>시니어 프라이빗 케어</h1>
+    <p class="sub">어르신의 이동을 의전처럼 모십니다. 서울 시내와 지방 모두 가능합니다.</p>
 
     <div class="seg" id="seg">
       <button class="on" data-v="서울 시내">서울 시내</button>
@@ -237,13 +237,13 @@ nav span{font-size:9.5px;font-weight:700;letter-spacing:.02em}
 
   <section class="view" id="v-list">
     <h1>내 예약</h1>
-    <p class="sub">신청한 일정과 진행 상태를 확인합니다.</p>
+    <p class="sub">예약하신 일정과 진행 상태를 확인하실 수 있습니다.</p>
     <div id="list"></div>
   </section>
 
   <section class="view" id="v-family">
     <h1>가족 등록</h1>
-    <p class="sub">어르신 정보를 등록하면 예약할 때 바로 선택할 수 있습니다.</p>
+    <p class="sub">등록해 두시면 예약 시 바로 선택할 수 있습니다.</p>
     <div id="famList"></div>
     <div class="card">
       <h3>어르신 추가</h3>
@@ -267,7 +267,7 @@ nav span{font-size:9.5px;font-weight:700;letter-spacing:.02em}
   </section>
 
   <section class="view" id="v-driver">
-    <h1>기사 화면</h1>
+    <h1>케어 드라이버</h1>
     <p class="sub">협력 기사로 등록하면 배차를 받아 수락할 수 있습니다.</p>
     <div id="driverCard"></div>
     <div class="stats" style="margin-top:14px">
@@ -279,7 +279,7 @@ nav span{font-size:9.5px;font-weight:700;letter-spacing:.02em}
   </section>
 
   <section class="view" id="v-org">
-    <h1>기관 대시보드</h1>
+    <h1>파트너 라운지</h1>
     <p class="sub">요양원·병원·복지관 담당자가 보는 화면입니다.</p>
     <div class="stats">
       <div class="stat"><b id="sTotal">0</b><span>이번 달 예약</span></div>
@@ -308,7 +308,7 @@ nav span{font-size:9.5px;font-weight:700;letter-spacing:.02em}
     <div class="in">
       <button class="on" data-tab="book">
         <svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="16" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg>
-        <span>예약</span></button>
+        <span>케어 예약</span></button>
       <button data-tab="list">
         <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
         <span>내 예약</span></button>
@@ -317,10 +317,10 @@ nav span{font-size:9.5px;font-weight:700;letter-spacing:.02em}
         <span>가족</span></button>
       <button data-tab="driver">
         <svg viewBox="0 0 24 24"><path d="M3 16V9l2-4h14l2 4v7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg>
-        <span>기사</span></button>
+        <span>드라이버</span></button>
       <button data-tab="org">
         <svg viewBox="0 0 24 24"><path d="M4 20V6l7-3 7 3v14"/><path d="M9 20v-5h4v5M9 9h2M13 9h2M9 12h2M13 12h2"/></svg>
-        <span>기관</span></button>
+        <span>파트너</span></button>
     </div>
   </nav>
 </div>
