@@ -1,7 +1,7 @@
 {
-  "name": "소켄 SOKEN — 어르신 이동 예약",
+  "name": "소켄 SOKEN — 시니어 프라이빗 케어",
   "short_name": "소켄",
-  "description": "서울 시내·지방 어르신 이동과 병원 동행을 예약하는 시니어 케어 플랫폼",
+  "description": "시니어 프라이빗 케어 — 서울 시내·지방 어르신 이동과 병원 동행",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
