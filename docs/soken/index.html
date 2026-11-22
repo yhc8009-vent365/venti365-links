@@ -154,6 +154,14 @@ nav svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.5;
   stroke-linecap:round;stroke-linejoin:round}
 nav span{font-size:9.5px;font-weight:700;letter-spacing:.02em}
 
+.paybox{display:flex;flex-direction:column;gap:0}
+.prow{display:flex;justify-content:space-between;align-items:center;padding:11px 0;
+  border-bottom:1px solid var(--line2);font-size:13px;color:var(--muted)}
+.prow:last-child{border-bottom:none}
+.prow b{color:var(--ink);font-weight:700;font-variant-numeric:tabular-nums}
+.prow b.paid{color:var(--ok)}
+.dbadge{display:inline-block;font-size:9.5px;padding:3px 8px;border-radius:999px;
+  background:rgba(184,134,11,.16);color:var(--gold);font-weight:700;margin-right:6px;letter-spacing:.03em}
 #toast{position:fixed;left:50%;bottom:calc(100px + var(--sab));transform:translate(-50%,14px);
   background:#1E1F23;border:1px solid var(--line);padding:14px 22px;border-radius:14px;
   font-size:13px;color:var(--ink);opacity:0;transition:.3s;pointer-events:none;z-index:50;
@@ -202,6 +210,10 @@ nav span{font-size:9.5px;font-weight:700;letter-spacing:.02em}
       <div class="field" id="fReturn" style="display:none">
         <label>귀가 시간</label><input type="time" id="returnTime" value="18:00">
       </div>
+      <div class="field">
+        <label>전담 기사 (선택)</label>
+        <select id="preferDriver"><option value="">지정 안 함 — 배차 후 안내</option></select>
+      </div>
       <p class="note" id="fareNote" style="display:none">지방 이동은 거리와 대기 시간에 따라 요금이 달라집니다. 예약 접수 후 담당자가 확정 금액을 안내드립니다.</p>
     </div>
 
@@ -231,7 +243,18 @@ nav span{font-size:9.5px;font-weight:700;letter-spacing:.02em}
       </div>
     </div>
 
-    <div class="btnrow"><button class="btn primary" id="submit">예약 신청</button></div>
+    <div class="card">
+      <h3>예약금</h3>
+      <div class="paybox">
+        <div class="prow"><span>예상 요금</span><b id="estFare">상담 후 확정</b></div>
+        <div class="prow"><span>예약금</span><b>20,000원</b></div>
+        <div class="prow"><span>결제 상태</span><b id="payState">결제 전</b></div>
+      </div>
+      <p class="hintline">예약금은 운행 후 총액에서 차감됩니다. 24시간 전 취소 시 전액 환불합니다.</p>
+      <button class="btn ghost" id="payDeposit" style="margin-top:12px">예약금 20,000원 결제</button>
+    </div>
+
+    <div class="btnrow"><button class="btn primary" id="submit">예약 확정</button></div>
     <div style="height:20px"></div>
   </section>
 
@@ -275,6 +298,7 @@ nav span{font-size:9.5px;font-weight:700;letter-spacing:.02em}
       <div class="stat"><b id="dMine">0</b><span>내 배차</span></div>
       <div class="stat"><b id="dDone">0</b><span>완료</span></div>
     </div>
+    <p class="hintline" id="settle" style="margin:12px 22px 0"></p>
     <div id="jobs"></div>
   </section>
 
@@ -409,8 +433,22 @@ nav span{font-size:9.5px;font-weight:700;letter-spacing:.02em}
   chipToggle($('#needs')); chipToggle($('#fNeeds'));
   function chipVals(box) { return $$('.chip.on', box).map(function (c) { return c.dataset.v; }); }
 
+  var DEPOSIT = 20000;
+  var depositPaid = false;
+  $('#payDeposit').addEventListener('click', function () {
+    if (!selected) { toast('어르신을 먼저 선택해 주세요'); return; }
+    if (depositPaid) { toast('이미 결제되었습니다'); return; }
+    depositPaid = true;
+    $('#payState').textContent = '결제 완료 · 20,000원';
+    $('#payState').className = 'paid';
+    $('#payDeposit').textContent = '결제 완료 (24시간 전 취소 시 환불)';
+    $('#payDeposit').disabled = true;
+    toast('예약금이 결제되었습니다 · 30분 우선 배차');
+  });
+
   $('#submit').addEventListener('click', function () {
     if (!selected) { toast('어르신을 먼저 선택해 주세요'); return; }
+    if (!depositPaid) { toast('예약금을 먼저 결제해 주세요'); return; }
     var from = $('#from').value.trim(), to = $('#to').value.trim();
     var date = $('#date').value, time = $('#time').value;
     if (!from || !to) { toast('출발지와 도착지를 입력해 주세요'); return; }
@@ -425,13 +463,19 @@ nav span{font-size:9.5px;font-weight:700;letter-spacing:.02em}
       trip: area === '서울 시내' ? '편도' : $('#trip').value,
       returnTime: roundTrip ? $('#returnTime').value : '',
       assist: $('#assist').value, needs: chipVals($('#needs')),
-      memo: $('#memo').value.trim(), status: '신청', at: new Date().toISOString()
+      memo: $('#memo').value.trim(),
+      preferDriver: $('#preferDriver').value || '',
+      deposit: DEPOSIT, depositPaid: true,
+      status: '확정', at: new Date().toISOString()
     });
     save('vc_bookings', bookings);
-    renderList(); renderJobs(); renderOrg();
+    renderList(); renderJobs(); renderOrg(); refreshDrivers();
     $('#from').value = ''; $('#to').value = ''; $('#memo').value = '';
     $$('#needs .chip').forEach(function (c) { c.classList.remove('on'); });
-    toast('예약이 접수되었습니다 · 담당자가 확인 후 연락드립니다');
+    depositPaid = false;
+    $('#payState').textContent = '결제 전'; $('#payState').className = '';
+    $('#payDeposit').textContent = '예약금 20,000원 결제'; $('#payDeposit').disabled = false;
+    toast('예약이 확정되었습니다 · 담당 기사 배정 후 연락드립니다');
     go('list');
   });
 
@@ -439,6 +483,7 @@ nav span{font-size:9.5px;font-weight:700;letter-spacing:.02em}
     if (st === '완료') return 'badge done';
     if (st === '탑승') return 'badge run';
     if (st === '수락') return 'badge take';
+    if (st === '확정') return 'badge take';
     return 'badge';
   }
   function renderList() {
@@ -491,7 +536,12 @@ nav span{font-size:9.5px;font-weight:700;letter-spacing:.02em}
   function renderDriverCard() {
     var box = $('#driverCard');
     if (driver) {
+      var doneCnt = bookings.filter(function (b) {
+        return b.acceptedBy === driver.phone && b.status === '완료';
+      }).length;
       box.innerHTML = '<div class="drv"><div class="who">' + driver.name + ' 기사님</div>' +
+        '<div style="margin:8px 0 10px"><span class="dbadge">교육 이수</span>' +
+        '<span class="dbadge">완료 ' + doneCnt + '건</span></div>' +
         '<div class="meta">' + driver.car + ' · ' + driver.zone + '<br>' + driver.phone + '</div>' +
         '<div class="out" id="drvOut">등록 해지</div></div>';
       $('#drvOut').addEventListener('click', function () {
@@ -523,7 +573,7 @@ nav span{font-size:9.5px;font-weight:700;letter-spacing:.02em}
     renderDriverCard();
     var box = $('#jobs');
     var list = bookings.filter(function (b) { return b.status !== '완료' || b.acceptedBy; });
-    var open = bookings.filter(function (b) { return b.status === '신청'; });
+    var open = bookings.filter(function (b) { return b.status === '신청' || b.status === '확정'; });
     var mine = bookings.filter(function (b) {
       return b.acceptedBy && driver && b.acceptedBy === driver.phone && b.status !== '완료';
     });
@@ -533,6 +583,9 @@ nav span{font-size:9.5px;font-weight:700;letter-spacing:.02em}
     $('#dOpen').textContent = open.length;
     $('#dMine').textContent = mine.length;
     $('#dDone').textContent = done.length;
+    $('#settle').textContent = done.length
+      ? '이번 달 완료 ' + done.length + '건 · 플랫폼 수수료 10% 공제 후 정산 (요율 확정 후 금액 안내)'
+      : '완료 건이 쌓이면 정산 내역이 표시됩니다';
 
     if (!list.length) { box.innerHTML = '<div class="empty">대기 중인 배차가 없습니다.</div>'; return; }
 
@@ -541,7 +594,7 @@ nav span{font-size:9.5px;font-weight:700;letter-spacing:.02em}
       var acts;
       if (!driver) {
         acts = '<div class="m" style="color:#6F6C66">기사 등록 후 배차를 수락할 수 있습니다</div>';
-      } else if (b.status === '신청') {
+      } else if (b.status === '신청' || b.status === '확정') {
         acts = '<div class="acts"><button data-id="' + b.id + '" data-do="take" class="on">배차 수락</button></div>';
       } else if (b.acceptedBy === driver.phone) {
         acts = '<div class="acts"><button data-id="' + b.id + '" data-do="탑승">승차 완료</button>' +
@@ -565,7 +618,7 @@ nav span{font-size:9.5px;font-weight:700;letter-spacing:.02em}
         bookings.forEach(function (b) {
           if (b.id !== id) return;
           if (act === 'take') {
-            if (b.status !== '신청') return;
+            if (b.status !== '신청' && b.status !== '확정') return;
             b.status = '수락'; b.acceptedBy = driver.phone; b.acceptedByPhone = driver.phone;
             b.acceptedByName = driver.name; b.acceptedAt = new Date().toISOString();
           } else {
@@ -601,10 +654,22 @@ nav span{font-size:9.5px;font-weight:700;letter-spacing:.02em}
     }).join('');
   }
 
+  function refreshDrivers() {
+    var sel = $('#preferDriver');
+    var names = [];
+    bookings.forEach(function (b) {
+      if (b.preferDriver) names.push(b.preferDriver);
+      if (b.acceptedByName) names.push(b.acceptedByName);
+    });
+    names = names.filter(function (v, i, a) { return v && a.indexOf(v) === i; });
+    sel.innerHTML = '<option value="">지정 안 함 — 배차 후 안내</option>' +
+      names.map(function (n) { return '<option>' + n + '</option>'; }).join('');
+  }
+
   var d = new Date(); d.setDate(d.getDate() + 1);
   $('#date').value = d.toISOString().slice(0, 10);
   $('#time').value = '09:30';
-  renderElders(); renderList(); renderFamily(); renderJobs(); renderOrg();
+  renderElders(); renderList(); renderFamily(); renderJobs(); renderOrg(); refreshDrivers();
 })();
 </script>
 </body>
